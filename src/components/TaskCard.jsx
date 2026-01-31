@@ -1,7 +1,15 @@
-import { Save, X, Edit, Trash2, CheckCircle } from 'lucide-react';
+import { CheckCircle, Edit, Save, Trash2, X } from 'lucide-react';
 import './TaskCard.css';
 
 const TaskCard = ({ tarefa, onEditar, onRemover, editingTask, editForm, onEditFormChange, onSalvar, onCancelar, savingTask, formatarDuracao, categorias, clientes }) => {
+    console.log('TaskCard renderizado:', {
+        tarefaId: tarefa.id,
+        tarefaIdTipo: typeof tarefa.id,
+        editingTask: editingTask,
+        editingTaskTipo: typeof editingTask,
+        isEditing: editingTask === tarefa.id
+    });
+
     if (editingTask === tarefa.id) {
         return (
             <div className="task-card task-card-editing">

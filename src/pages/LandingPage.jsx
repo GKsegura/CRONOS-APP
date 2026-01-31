@@ -177,7 +177,13 @@ const LandingPage = () => {
     };
 
     const iniciarEdicao = (tarefa) => {
+        console.log('=== INICIAR EDIÇÃO ===');
+        console.log('Tarefa recebida:', tarefa);
+        console.log('tarefa.id:', tarefa.id, 'tipo:', typeof tarefa.id);
+
         setEditingTask(tarefa.id);
+        console.log('editingTask setado para:', tarefa.id);
+
         setEditForm({
             descricao: tarefa.descricao || '',
             categoria: tarefa.categoria || '',
