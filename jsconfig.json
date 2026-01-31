@@ -1,0 +1,46 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@assets/*": [
+                "./src/assets/*"
+            ],
+            "@components/*": [
+                "./src/components/*"
+            ],
+            "@libs/*": [
+                "./src/libs/*"
+            ],
+            "@pages/*": [
+                "./src/pages/*"
+            ],
+            "@styles/*": [
+                "./src/styles/*"
+            ],
+            "@api/*": [
+                "./src/api/*"
+            ],
+            "@assets": [
+                "./src/assets"
+            ],
+            "@components": [
+                "./src/components"
+            ],
+            "@libs": [
+                "./src/libs"
+            ],
+            "@pages": [
+                "./src/pages"
+            ],
+            "@styles": [
+                "./src/styles"
+            ],
+            "@api": [
+                "./src/api"
+            ]
+        }
+    },
+    "include": [
+        "src"
+    ]
+}

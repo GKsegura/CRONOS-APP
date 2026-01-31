@@ -1,0 +1,183 @@
+@import url(../styles/variables.css);
+
+.app-container {
+    min-height: 100vh;
+    background: var(--gradient-bg);
+}
+
+.main-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.home-grid,
+.detalhes-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+/* Loading */
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+}
+
+.loading-text {
+    margin-left: 0.75rem;
+    color: var(--gray-600);
+    font-size: 1.125rem;
+}
+
+/* Dias List */
+.dias-list {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Horários Grid */
+.horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    display: block;
+    color: var(--gray-700);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.horas-summary {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--gradient-primary);
+    border: 1px solid rgba(0, 198, 185, 0.3);
+    border-radius: var(--border-radius-xl);
+}
+
+.horas-summary-text {
+    color: white;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+/* Tarefas Header */
+.tarefas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.tarefas-total {
+    text-align: right;
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--gray-200);
+}
+
+.tarefas-total-label {
+    color: var(--gray-600);
+    font-size: 0.75rem;
+}
+
+.tarefas-total-value {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+/* Nova Tarefa Form */
+.nova-tarefa-form {
+    margin-bottom: 1.5rem;
+    background: var(--gray-50);
+    border-radius: var(--border-radius-xl);
+    padding: 1.5rem;
+    border: 1px solid var(--gray-200);
+}
+
+.nova-tarefa-title {
+    color: var(--gray-900);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nova-tarefa-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+.checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: var(--border-radius-sm);
+    border: 2px solid var(--gray-300);
+    background: var(--background-color);
+    cursor: pointer;
+}
+
+.checkbox:checked {
+    background: #22c55e;
+    border-color: #22c55e;
+}
+
+.checkbox:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.checkbox-label span {
+    color: var(--gray-700);
+    font-weight: 500;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Tarefas List */
+.tarefas-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .horarios-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nova-tarefa-inputs {
+        grid-template-columns: 1fr;
+    }
+
+    .tarefas-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}

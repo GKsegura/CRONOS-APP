@@ -1,0 +1,167 @@
+.dia-card {
+    padding: 1.5rem;
+    background: var(--background-color);
+    text-align: left;
+    border-radius: var(--border-radius-xl);
+    transition: all 0.2s;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    width: 100%;
+}
+
+.dia-card:hover {
+    background: var(--gray-50);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-xl);
+}
+
+.dia-card-content {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.dia-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.dia-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.dia-data {
+    color: var(--gray-900);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.dia-horarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.horario-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-700);
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--gray-200);
+}
+
+.icon-sm {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+.icon-md {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.horario-icon-trabalho {
+    color: var(--primary-color);
+}
+
+.horario-icon-almoco {
+    color: #f97316;
+}
+
+.horario-text {
+    font-size: 0.875rem;
+}
+
+.horas-trabalhadas {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, rgba(0, 198, 185, 0.1), rgba(0, 168, 157, 0.1));
+    border: 1px solid rgba(0, 198, 185, 0.2);
+    border-radius: var(--border-radius-lg);
+    color: var(--primary-color);
+    font-size: 0.875rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+}
+
+.dia-card-stats {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.stats-tarefas {
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--gray-200);
+}
+
+.stats-numero {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+}
+
+.stats-icon {
+    color: var(--primary-color);
+}
+
+.stats-count {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.stats-label {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.stats-duracao {
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    background: rgba(0, 198, 185, 0.1);
+    border-radius: var(--border-radius-lg);
+    padding: 0.25rem 0.75rem;
+    border: 1px solid rgba(0, 198, 185, 0.2);
+}
+
+.btn-excluir {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    border-radius: var(--border-radius-lg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.dia-card:hover .btn-excluir {
+    opacity: 1;
+}
+
+.btn-excluir:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+}

@@ -1,0 +1,66 @@
+.exportar-excel {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+    border-radius: var(--border-radius-xl);
+    padding: 2rem;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    box-shadow: var(--shadow-xl);
+}
+
+.exportar-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.exportar-icon {
+    padding: 0.5rem;
+    border-radius: var(--border-radius-lg);
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.exportar-icon .icon-lg {
+    color: #059669;
+}
+
+.exportar-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.exportar-subtitle {
+    color: var(--gray-600);
+    margin-bottom: 1.5rem;
+}
+
+.exportar-form {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.btn-export {
+    background: linear-gradient(to right, #10b981, #059669);
+    color: white;
+}
+
+.btn-export:hover:not(:disabled) {
+    background: linear-gradient(to right, #059669, #047857);
+}
+
+.btn-export:disabled {
+    background: linear-gradient(to right, #34d399, #10b981);
+}
+
+@media (max-width: 768px) {
+    .exportar-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .exportar-form .btn {
+        width: 100%;
+    }
+}
