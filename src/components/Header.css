@@ -1,7 +1,7 @@
 .header {
     position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: var(--z-sticky);
     background: var(--background-color);
     border-bottom: 1px solid var(--gray-200);
     box-shadow: var(--shadow-sm);
@@ -10,7 +10,7 @@
 .header-container {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 1rem 1.5rem;
+    padding: var(--spacing-md) var(--spacing-lg);
 }
 
 .header-content {
@@ -22,26 +22,26 @@
 .header-brand {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--spacing-md);
 }
 
 .header-icon {
-    padding: 0.5rem;
+    padding: var(--spacing-sm);
     border-radius: var(--border-radius-lg);
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    background: var(--gradient-primary-bg);
     box-shadow: var(--shadow-md);
 }
 
 .header-icon .icon {
-    width: 1.75rem;
-    height: 1.75rem;
-    color: white;
+    width: var(--icon-xl);
+    height: var(--icon-xl);
+    color: var(--background-color);
 }
 
 .header-title {
-    font-size: 1.875rem;
-    font-weight: 700;
-    background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+    font-size: var(--font-3xl);
+    font-weight: var(--font-weight-bold);
+    background: var(--gradient-primary-text);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -50,15 +50,15 @@
 .btn-voltar {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1.25rem;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-btn-y) var(--spacing-btn-x);
     border-radius: var(--border-radius-lg);
     background: var(--gray-100);
     border: 1px solid var(--gray-300);
     color: var(--gray-700);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-base);
     box-shadow: var(--shadow-sm);
 }
 
@@ -68,6 +68,6 @@
 }
 
 .icon-sm {
-    width: 1rem;
-    height: 1rem;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
 }

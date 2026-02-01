@@ -1,86 +1,86 @@
 .seletor-data {
     background: var(--background-color);
     border-radius: var(--border-radius-xl);
-    padding: 2rem;
+    padding: var(--spacing-xl);
     border: 1px solid var(--gray-200);
     box-shadow: var(--shadow-lg);
 }
 
 .seletor-title {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: var(--font-2xl);
+    font-weight: var(--font-weight-bold);
     color: var(--gray-900);
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--spacing-lg);
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--spacing-md);
 }
 
 .seletor-icon {
-    padding: 0.5rem;
+    padding: var(--spacing-sm);
     border-radius: var(--border-radius-lg);
-    background: rgba(0, 198, 185, 0.1);
-    border: 1px solid rgba(0, 198, 185, 0.2);
+    background: var(--bg-primary-alpha-10);
+    border: 1px solid var(--border-primary-alpha-20);
 }
 
 .seletor-icon .icon {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: var(--icon-lg);
+    height: var(--icon-lg);
     color: var(--primary-color);
 }
 
 .seletor-actions {
     display: flex;
-    gap: 1rem;
+    gap: var(--spacing-md);
     flex-wrap: wrap;
 }
 
 .btn-hoje {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
-    color: white;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--gradient-primary-horizontal);
+    color: var(--background-color);
     border: none;
     border-radius: var(--border-radius-lg);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-base);
     box-shadow: var(--shadow-md);
 }
 
 .btn-hoje:hover:not(:disabled) {
-    background: linear-gradient(to right, var(--primary-hover), var(--primary-color));
+    background: var(--gradient-primary-horizontal-hover);
     box-shadow: var(--shadow-lg);
 }
 
 .btn-hoje:disabled {
-    opacity: 0.5;
+    opacity: var(--opacity-disabled);
     cursor: not-allowed;
 }
 
 .icon-md {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: var(--icon-md);
+    height: var(--icon-md);
 }
 
 .input-date {
-    padding: 0.75rem 1rem;
+    padding: var(--spacing-md) var(--spacing-md);
     background: var(--background-color);
     border: 1px solid var(--gray-300);
     color: var(--gray-900);
     border-radius: var(--border-radius-lg);
     outline: none;
-    transition: all 0.2s;
+    transition: all var(--transition-base);
 }
 
 .input-date:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 198, 185, 0.1);
+    box-shadow: var(--shadow-focus-primary);
 }
 
 .input-date:disabled {
-    opacity: 0.5;
+    opacity: var(--opacity-disabled);
     cursor: not-allowed;
 }

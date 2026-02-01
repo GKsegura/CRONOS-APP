@@ -16,7 +16,7 @@
 }
 
 .btn:disabled {
-    opacity: 0.5;
+    opacity: var(--opacity-disabled);
     cursor: not-allowed;
 }
 
@@ -26,7 +26,7 @@
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
+    background: var(--gradient-primary-reverse);
     box-shadow: var(--shadow-lg);
 }
 
@@ -46,7 +46,7 @@
 }
 
 .btn-success:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--success-600) 0%, var(--success-700) 100%);
+    background: var(--gradient-success-hover);
     box-shadow: var(--shadow-success);
 }
 
@@ -102,13 +102,13 @@
 .select:focus,
 .textarea:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 198, 185, 0.1);
+    box-shadow: var(--shadow-focus-primary);
 }
 
 .input:disabled,
 .select:disabled,
 .textarea:disabled {
-    opacity: 0.5;
+    opacity: var(--opacity-disabled);
     cursor: not-allowed;
 }
 
@@ -118,28 +118,28 @@
 
 /* ==================== ICONS ==================== */
 .icon-xs {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
 }
 
 .icon-sm {
-    width: 1rem;
-    height: 1rem;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
 }
 
 .icon-md {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: var(--icon-md);
+    height: var(--icon-md);
 }
 
 .icon-lg {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: var(--icon-lg);
+    height: var(--icon-lg);
 }
 
 .icon-xl {
-    width: 1.75rem;
-    height: 1.75rem;
+    width: var(--icon-xl);
+    height: var(--icon-xl);
 }
 
 /* ==================== BADGES ==================== */
@@ -154,8 +154,8 @@
 }
 
 .badge-primary {
-    background: rgba(0, 198, 185, 0.1);
-    border: 1px solid rgba(0, 198, 185, 0.2);
+    background: var(--bg-primary-alpha-10);
+    border: 1px solid var(--border-primary-alpha-20);
     color: var(--primary-dark);
 }
 
@@ -178,7 +178,7 @@
 }
 
 .badge-orange {
-    background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+    background: var(--gradient-orange-badge);
     border: 1px solid var(--orange-500);
     color: var(--orange-600);
     font-weight: var(--font-weight-bold);
@@ -186,17 +186,17 @@
 
 /* ==================== SPINNER ==================== */
 .spinner {
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid currentColor;
+    width: var(--spinner-size);
+    height: var(--spinner-size);
+    border: var(--spinner-border-width) solid currentColor;
     border-bottom-color: transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    border-radius: var(--border-radius-full);
+    animation: spin var(--spinner-animation-duration) linear infinite;
 }
 
 .spinner-lg {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: var(--spinner-size-lg);
+    height: var(--spinner-size-lg);
 }
 
 @keyframes spin {
@@ -219,8 +219,8 @@
 .section-icon {
     padding: var(--spacing-sm);
     border-radius: var(--border-radius-lg);
-    background: rgba(0, 198, 185, 0.1);
-    border: 1px solid rgba(0, 198, 185, 0.2);
+    background: var(--bg-primary-alpha-10);
+    border: 1px solid var(--border-primary-alpha-20);
 }
 
 .section-icon .icon-lg {
@@ -237,8 +237,8 @@
 }
 
 .empty-state-icon {
-    width: 4rem;
-    height: 4rem;
+    width: var(--icon-2xl);
+    height: var(--icon-2xl);
     color: var(--gray-300);
     margin: 0 auto var(--spacing-md);
 }

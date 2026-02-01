@@ -1,57 +1,57 @@
 .exportar-excel {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+    background: var(--gradient-green-bg);
     border-radius: var(--border-radius-xl);
-    padding: 2rem;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: var(--spacing-xl);
+    border: 1px solid var(--green-border);
     box-shadow: var(--shadow-xl);
 }
 
 .exportar-header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
 }
 
 .exportar-icon {
-    padding: 0.5rem;
+    padding: var(--spacing-sm);
     border-radius: var(--border-radius-lg);
-    background: rgba(16, 185, 129, 0.2);
+    background: var(--green-bg-light);
 }
 
 .exportar-icon .icon-lg {
-    color: #059669;
+    color: var(--green-600);
 }
 
 .exportar-title {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: var(--font-2xl);
+    font-weight: var(--font-weight-bold);
     color: var(--gray-900);
 }
 
 .exportar-subtitle {
     color: var(--gray-600);
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--spacing-lg);
 }
 
 .exportar-form {
     display: flex;
-    gap: 1rem;
+    gap: var(--spacing-md);
     flex-wrap: wrap;
     align-items: flex-end;
 }
 
 .btn-export {
-    background: linear-gradient(to right, #10b981, #059669);
-    color: white;
+    background: var(--gradient-green);
+    color: var(--background-color);
 }
 
 .btn-export:hover:not(:disabled) {
-    background: linear-gradient(to right, #059669, #047857);
+    background: var(--gradient-green-hover);
 }
 
 .btn-export:disabled {
-    background: linear-gradient(to right, #34d399, #10b981);
+    background: var(--gradient-green-disabled);
 }
 
 @media (max-width: 768px) {

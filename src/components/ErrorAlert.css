@@ -1,26 +1,26 @@
 .error-alert-container {
     max-width: 1280px;
-    margin: 1rem auto;
-    padding: 0 1.5rem;
+    margin: var(--spacing-md) auto;
+    padding: 0 var(--spacing-lg);
 }
 
 .error-alert {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
+    background: var(--danger-50);
+    border: 1px solid var(--danger-200);
     border-radius: var(--border-radius-lg);
-    padding: 1rem;
+    padding: var(--spacing-md);
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    color: #991b1b;
+    gap: var(--spacing-md);
+    color: var(--danger-700);
     box-shadow: var(--shadow-md);
 }
 
 .error-icon {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: var(--icon-md);
+    height: var(--icon-md);
     flex-shrink: 0;
-    color: #dc2626;
+    color: var(--danger-600);
 }
 
 .error-message {
@@ -29,19 +29,19 @@
 
 .error-close {
     flex-shrink: 0;
-    padding: 0.375rem;
+    padding: var(--spacing-btn-icon);
     border: none;
     background: transparent;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color var(--transition-base);
 }
 
 .error-close:hover {
-    background: #fee2e2;
+    background: var(--danger-100);
 }
 
 .icon-sm {
-    width: 1rem;
-    height: 1rem;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
 }
