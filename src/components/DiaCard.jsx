@@ -1,7 +1,15 @@
 import { CheckSquare, Clock, Trash2 } from "lucide-react";
 import './DiaCard.css';
 
-const DiaCard = ({ dia, onSelecionar, onExcluir, calcularHorasTrabalhadas, calcularTotalTarefas, obterDataFormatada }) => (
+const DiaCard = ({
+    dia,
+    onSelecionar,
+    onExcluir,
+    calcularHorasTrabalhadas,
+    calcularTotalTarefas,
+    calcularTotalTarefasApontadas,
+    obterDataFormatada
+}) => (
     <button
         onClick={() => onSelecionar(dia)}
         className="dia-card"
@@ -43,9 +51,14 @@ const DiaCard = ({ dia, onSelecionar, onExcluir, calcularHorasTrabalhadas, calcu
                     <p className="stats-label">tarefas</p>
                 </div>
                 {dia.tarefas && dia.tarefas.length > 0 && (
-                    <p className="stats-duracao">
-                        ⏱️ {calcularTotalTarefas(dia.tarefas)}
-                    </p>
+                    <>
+                        <p className="stats-duracao">
+                            Total: {calcularTotalTarefas(dia.tarefas)}
+                        </p>
+                        <p className="stats-duracao">
+                            Apontado: {calcularTotalTarefasApontadas(dia.tarefas)}
+                        </p>
+                    </>
                 )}
                 <button
                     onClick={(e) => {

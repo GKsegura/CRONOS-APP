@@ -1,6 +1,6 @@
 import { categoriasAPI, clientesAPI, diasAPI, exportAPI, tarefasAPI } from '@api';
 import { DiaCard, ErrorAlert, ExportarExcel, Header, SeletorData, TaskCard } from '@components';
-import { Calendar, CheckSquare, Clock, Plus } from 'lucide-react';
+import { Calendar, CheckSquare, Clock, Filter, Plus } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import './LandingPage.css';
 
@@ -13,6 +13,7 @@ const LandingPage = () => {
     const [editingTask, setEditingTask] = useState(null);
     const [savingTask, setSavingTask] = useState(false);
     const [exporting, setExporting] = useState(false);
+    const [filtroStatus, setFiltroStatus] = useState('pendentes'); // NOVO: 'todos', 'pendentes', 'completos'
 
     const [clientes, setClientes] = useState([]);
     const [categorias, setCategorias] = useState([]);
@@ -177,13 +178,7 @@ const LandingPage = () => {
     };
 
     const iniciarEdicao = (tarefa) => {
-        console.log('=== INICIAR EDIÇÃO ===');
-        console.log('Tarefa recebida:', tarefa);
-        console.log('tarefa.id:', tarefa.id, 'tipo:', typeof tarefa.id);
-
         setEditingTask(tarefa.id);
-        console.log('editingTask setado para:', tarefa.id);
-
         setEditForm({
             descricao: tarefa.descricao || '',
             categoria: tarefa.categoria || '',
@@ -308,6 +303,13 @@ const LandingPage = () => {
         }
     }, []);
 
+    const converterHorasParaMinutos = useCallback((horasStr) => {
+        if (!horasStr || horasStr === '00:00') return 0;
+
+        const [horas, minutos] = horasStr.split(':').map(Number);
+        return (horas * 60) + minutos;
+    }, []);
+
     const calcularTotalTarefas = useCallback((tarefas) => {
         if (!tarefas || tarefas.length === 0) return '0h00m';
         const total = tarefas.reduce((acc, t) => acc + (t.duracaoMin || 0), 0);
@@ -325,6 +327,33 @@ const LandingPage = () => {
 
         return formatarDuracao(totalMinutos);
     }, [formatarDuracao]);
+
+    const calcularTotalTarefasApontadasMinutos = useCallback((tarefas) => {
+        if (!Array.isArray(tarefas) || tarefas.length === 0) {
+            return 0;
+        }
+
+        return tarefas
+            .filter(tarefa => tarefa.apontado === true)
+            .reduce((acc, tarefa) => acc + (tarefa.duracaoMin ?? 0), 0);
+    }, []);
+
+    const diaComHorasPendentes = useCallback((dia) => {
+        if (!dia.inicioTrabalho || !dia.fimTrabalho) {
+            return true;
+        }
+
+        const horasTrabalhadas = calcularHorasTrabalhadas(dia);
+        const minutosTrabalho = converterHorasParaMinutos(horasTrabalhadas);
+
+        const minutosApontados = calcularTotalTarefasApontadasMinutos(dia.tarefas || []);
+
+        if (minutosApontados === 0) {
+            return true;
+        }
+
+        return Math.abs(minutosTrabalho - minutosApontados) > 5;
+    }, [calcularHorasTrabalhadas, converterHorasParaMinutos, calcularTotalTarefasApontadasMinutos]);
 
     const obterDataFormatada = useCallback((dia) => {
         return dia.dataFormatada || dia.data || '(sem data)';
@@ -344,7 +373,86 @@ const LandingPage = () => {
         setError('');
     }, []);
 
-    const diasRecentes = useMemo(() => dias.slice(-10).reverse(), [dias]);
+    // NOVO: Ordena tarefas alfabeticamente, com não apontadas sempre primeiro
+    const ordenarTarefas = useCallback((tarefas) => {
+        if (!tarefas || tarefas.length === 0) return tarefas;
+        
+        const naoApontadas = tarefas.filter(t => !t.apontado).sort((a, b) => 
+            (a.descricao || '').localeCompare(b.descricao || '', 'pt-BR')
+        );
+        
+        const apontadas = tarefas.filter(t => t.apontado).sort((a, b) => 
+            (a.descricao || '').localeCompare(b.descricao || '', 'pt-BR')
+        );
+        
+        return [...naoApontadas, ...apontadas];
+    }, []);
+
+    // MODIFICADO: Aplica filtro baseado na opção selecionada
+    const diasRecentes = useMemo(() => {
+        let diasFiltrados = dias;
+
+        if (filtroStatus === 'pendentes') {
+            diasFiltrados = dias.filter(diaComHorasPendentes);
+        } else if (filtroStatus === 'completos') {
+            diasFiltrados = dias.filter(dia => !diaComHorasPendentes(dia));
+        }
+        // Se filtroStatus === 'todos', mostra todos sem filtrar
+
+        return diasFiltrados.slice(-10).reverse();
+    }, [dias, filtroStatus, diaComHorasPendentes]);
+
+    // NOVO: Contador para cada tipo
+    const contadores = useMemo(() => {
+        const pendentes = dias.filter(diaComHorasPendentes).length;
+        const completos = dias.filter(dia => !diaComHorasPendentes(dia)).length;
+
+        return {
+            todos: dias.length,
+            pendentes,
+            completos
+        };
+    }, [dias, diaComHorasPendentes]);
+
+    // NOVO: Título dinâmico baseado no filtro
+    const getTitulo = () => {
+        switch (filtroStatus) {
+            case 'todos':
+                return 'Todos os Dias';
+            case 'pendentes':
+                return 'Dias Pendentes';
+            case 'completos':
+                return 'Dias Completos';
+            default:
+                return 'Dias';
+        }
+    };
+
+    // NOVO: Mensagem vazia baseada no filtro
+    const getMensagemVazia = () => {
+        switch (filtroStatus) {
+            case 'todos':
+                return {
+                    title: 'Nenhum dia registrado ainda',
+                    subtitle: 'Clique em "Hoje" ou selecione uma data acima'
+                };
+            case 'pendentes':
+                return {
+                    title: 'Nenhum dia pendente',
+                    subtitle: 'Todos os dias estão com horas completas!'
+                };
+            case 'completos':
+                return {
+                    title: 'Nenhum dia completo ainda',
+                    subtitle: 'Complete os apontamentos para vê-los aqui'
+                };
+            default:
+                return {
+                    title: 'Nenhum dia encontrado',
+                    subtitle: ''
+                };
+        }
+    };
 
     return (
         <div className="app-container">
@@ -358,12 +466,47 @@ const LandingPage = () => {
                         <ExportarExcel onExportar={exportarExcel} exporting={exporting} />
 
                         <section className="card">
-                            <h2 className="section-title">
-                                <div className="section-icon">
-                                    <Clock className="icon-lg" />
+                            <div className="section-header-with-filter">
+                                <h2 className="section-title">
+                                    <div className="section-icon">
+                                        <Clock className="icon-lg" />
+                                    </div>
+                                    {getTitulo()}
+                                </h2>
+
+                                {/* NOVO: Filtro com opções */}
+                                <div className="filter-group">
+                                    <Filter className="icon-sm filter-icon" />
+                                    <div className="filter-options">
+                                        <button
+                                            className={`filter-btn ${filtroStatus === 'todos' ? 'active' : ''}`}
+                                            onClick={() => setFiltroStatus('todos')}
+                                        >
+                                            Todos
+                                            <span className="filter-badge">{contadores.todos}</span>
+                                        </button>
+                                        <button
+                                            className={`filter-btn ${filtroStatus === 'pendentes' ? 'active' : ''}`}
+                                            onClick={() => setFiltroStatus('pendentes')}
+                                        >
+                                            Pendentes
+                                            {contadores.pendentes > 0 && (
+                                                <span className="filter-badge badge-warning">{contadores.pendentes}</span>
+                                            )}
+                                        </button>
+                                        <button
+                                            className={`filter-btn ${filtroStatus === 'completos' ? 'active' : ''}`}
+                                            onClick={() => setFiltroStatus('completos')}
+                                        >
+                                            Completos
+                                            {contadores.completos > 0 && (
+                                                <span className="filter-badge badge-success">{contadores.completos}</span>
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
-                                Dias Recentes
-                            </h2>
+                            </div>
+
                             {loading ? (
                                 <div className="loading-container">
                                     <div className="spinner spinner-lg"></div>
@@ -374,6 +517,12 @@ const LandingPage = () => {
                                     <Calendar className="empty-state-icon" />
                                     <p className="empty-state-title">Nenhum dia registrado ainda</p>
                                     <p className="empty-state-subtitle">Clique em "Hoje" ou selecione uma data acima</p>
+                                </div>
+                            ) : diasRecentes.length === 0 ? (
+                                <div className="empty-state">
+                                    <CheckSquare className="empty-state-icon" />
+                                    <p className="empty-state-title">{getMensagemVazia().title}</p>
+                                    <p className="empty-state-subtitle">{getMensagemVazia().subtitle}</p>
                                 </div>
                             ) : (
                                 <div className="dias-list">
@@ -388,6 +537,7 @@ const LandingPage = () => {
                                             onExcluir={excluirDia}
                                             calcularHorasTrabalhadas={calcularHorasTrabalhadas}
                                             calcularTotalTarefas={calcularTotalTarefas}
+                                            calcularTotalTarefasApontadas={calcularTotalTarefasApontadas}
                                             obterDataFormatada={obterDataFormatada}
                                         />
                                     ))}
@@ -399,6 +549,7 @@ const LandingPage = () => {
 
                 {view === 'detalhes' && selectedDia && (
                     <div className="detalhes-grid">
+                        {/* ... resto do código permanece igual ... */}
                         <section className="card">
                             <h2 className="section-title">
                                 <div className="section-icon">
@@ -483,7 +634,6 @@ const LandingPage = () => {
                                         </div>
                                     </div>
                                 )}
-
                             </div>
 
                             <div className="nova-tarefa-form">
@@ -580,7 +730,7 @@ const LandingPage = () => {
 
                             {selectedDia.tarefas && selectedDia.tarefas.length > 0 ? (
                                 <div className="tarefas-list">
-                                    {selectedDia.tarefas.map((tarefa) => (
+                                    {ordenarTarefas(selectedDia.tarefas).map((tarefa) => (
                                         <TaskCard
                                             key={tarefa.id}
                                             tarefa={tarefa}

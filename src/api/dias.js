@@ -1,8 +1,27 @@
 import api from './axios';
 
 export const diasAPI = {
-    // Buscar todos os dias
+    // Buscar todos os dias do mês atual
     getAll: async () => {
+        const response = await api.get('/dias');
+
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1; // Janeiro = 1, Fevereiro = 2, etc
+        const currentYear = now.getFullYear();
+
+        // Filtrar apenas dias do mês atual
+        const diasDoMesAtual = response.data.filter(dia => {
+            // Assumindo que dia.data vem no formato "dd/MM/yyyy"
+            const [day, month, year] = dia.data.split('/').map(Number);
+
+            return month === currentMonth && year === currentYear;
+        });
+
+        return diasDoMesAtual;
+    },
+
+    // Buscar todos os dias sem filtro (caso precise no futuro)
+    getAllUnfiltered: async () => {
         const response = await api.get('/dias');
         return response.data;
     },
