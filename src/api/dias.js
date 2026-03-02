@@ -20,6 +20,26 @@ export const diasAPI = {
         return diasDoMesAtual;
     },
 
+    getMesAtualEAnterior: async () => {
+        const response = await api.get('/dias');
+
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1; // Janeiro = 1, Fevereiro = 2, etc
+        const currentYear = now.getFullYear();
+        // Filtrar dias do mês atual e do mês anterior
+        const diasDoMesAtualEAnterior = response.data.filter(dia => {
+            // Assumindo que dia.data vem no formato "dd/MM/yyyy"
+            const [day, month, year] = dia.data.split('/').map(Number);
+
+            const isCurrentMonth = month === currentMonth && year === currentYear;
+            const isPreviousMonth = month === (currentMonth === 1 ? 12 : currentMonth - 1) && year === (currentMonth === 1 ? currentYear - 1 : currentYear);
+
+            return isCurrentMonth || isPreviousMonth;
+        });
+
+        return diasDoMesAtualEAnterior;
+    },
+
     // Buscar todos os dias sem filtro (caso precise no futuro)
     getAllUnfiltered: async () => {
         const response = await api.get('/dias');

@@ -191,12 +191,11 @@
 .filter-options {
     display: flex;
     gap: 0.5rem;
-    background-color: var(--bg-secondary);
+    background-color: var(--gray-100);
     padding: 0.25rem;
     border-radius: 8px;
 }
 
-/* Botões de filtro */
 .filter-btn {
     display: flex;
     align-items: center;
@@ -205,29 +204,29 @@
     background-color: transparent;
     border: none;
     border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-secondary);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--gray-600);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base);
     white-space: nowrap;
 }
 
 .filter-btn:hover {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
+    background-color: var(--gray-200);
+    color: var(--gray-900);
 }
 
 .filter-btn.active {
-    background-color: var(--primary);
+    background-color: var(--primary-color);
     color: white;
+    box-shadow: var(--shadow-sm);
 }
 
 .filter-btn.active:hover {
-    background-color: var(--primary-dark);
+    background-color: var(--primary-hover);
 }
 
-/* Badges nos filtros */
 .filter-badge {
     display: inline-flex;
     align-items: center;
@@ -235,34 +234,35 @@
     min-width: 1.5rem;
     height: 1.5rem;
     padding: 0 0.5rem;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semibold);
 }
 
-.filter-btn:not(.active) .filter-badge {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
+.filter-btn.active .filter-badge {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: white;
 }
 
 .filter-badge.badge-warning {
-    background-color: rgba(255, 193, 7, 0.2);
-    color: var(--warning);
+    background-color: var(--warning-100);
+    color: var(--warning-700);
 }
 
 .filter-btn.active .filter-badge.badge-warning {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.25);
     color: white;
 }
 
 .filter-badge.badge-success {
-    background-color: rgba(76, 175, 80, 0.2);
-    color: var(--success);
+    background-color: var(--success-100);
+    color: var(--success-700);
 }
 
 .filter-btn.active .filter-badge.badge-success {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.25);
     color: white;
 }
 

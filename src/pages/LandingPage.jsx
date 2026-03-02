@@ -53,7 +53,7 @@ const LandingPage = () => {
         try {
             setLoading(true);
             setError('');
-            const data = await diasAPI.getAll();
+            const data = await diasAPI.getMesAtualEAnterior();
             setDias(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Erro ao carregar dias:', err);
@@ -339,18 +339,22 @@ const LandingPage = () => {
     }, []);
 
     const diaComHorasPendentes = useCallback((dia) => {
+        const tarefas = dia.tarefas || [];
+
+        // Se todas as tarefas existentes estão apontadas, considera completo
+        if (tarefas.length > 0 && tarefas.every(t => t.apontado)) {
+            return false;
+        }
+
         if (!dia.inicioTrabalho || !dia.fimTrabalho) {
             return true;
         }
 
         const horasTrabalhadas = calcularHorasTrabalhadas(dia);
         const minutosTrabalho = converterHorasParaMinutos(horasTrabalhadas);
+        const minutosApontados = calcularTotalTarefasApontadasMinutos(tarefas);
 
-        const minutosApontados = calcularTotalTarefasApontadasMinutos(dia.tarefas || []);
-
-        if (minutosApontados === 0) {
-            return true;
-        }
+        if (minutosApontados === 0) return true;
 
         return Math.abs(minutosTrabalho - minutosApontados) > 5;
     }, [calcularHorasTrabalhadas, converterHorasParaMinutos, calcularTotalTarefasApontadasMinutos]);
@@ -376,15 +380,15 @@ const LandingPage = () => {
     // NOVO: Ordena tarefas alfabeticamente, com não apontadas sempre primeiro
     const ordenarTarefas = useCallback((tarefas) => {
         if (!tarefas || tarefas.length === 0) return tarefas;
-        
-        const naoApontadas = tarefas.filter(t => !t.apontado).sort((a, b) => 
+
+        const naoApontadas = tarefas.filter(t => !t.apontado).sort((a, b) =>
             (a.descricao || '').localeCompare(b.descricao || '', 'pt-BR')
         );
-        
-        const apontadas = tarefas.filter(t => t.apontado).sort((a, b) => 
+
+        const apontadas = tarefas.filter(t => t.apontado).sort((a, b) =>
             (a.descricao || '').localeCompare(b.descricao || '', 'pt-BR')
         );
-        
+
         return [...naoApontadas, ...apontadas];
     }, []);
 
