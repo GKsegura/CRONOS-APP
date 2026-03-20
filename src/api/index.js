@@ -1,4 +1,5 @@
 export { default as api } from './axios';
+export { backlogAPI } from './backlog';
 export { categoriasAPI } from './categorias';
 export { clientesAPI } from './clientes';
 export { diasAPI } from './dias';

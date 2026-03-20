@@ -1,5 +1,5 @@
 import { categoriasAPI, clientesAPI, diasAPI, exportAPI, tarefasAPI } from '@api';
-import { DiaCard, ErrorAlert, ExportarExcel, Header, SeletorData, TaskCard } from '@components';
+import { BacklogPanel, DiaCard, ErrorAlert, ExportarExcel, Header, SeletorData, TaskCard } from '@components';
 import { Calendar, CheckSquare, Clock, Filter, Plus } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import './LandingPage.css';
@@ -13,7 +13,7 @@ const LandingPage = () => {
     const [editingTask, setEditingTask] = useState(null);
     const [savingTask, setSavingTask] = useState(false);
     const [exporting, setExporting] = useState(false);
-    const [filtroStatus, setFiltroStatus] = useState('pendentes'); // NOVO: 'todos', 'pendentes', 'completos'
+    const [filtroStatus, setFiltroStatus] = useState('pendentes');
 
     const [clientes, setClientes] = useState([]);
     const [categorias, setCategorias] = useState([]);
@@ -271,6 +271,20 @@ const LandingPage = () => {
         }
     };
 
+    // Chamado pelo BacklogPanel quando uma tarefa é convertida para o dia aberto
+    const handleTarefaConvertida = useCallback((novaTarefa) => {
+        setSelectedDia(prev => ({
+            ...prev,
+            tarefas: [...(prev.tarefas || []), novaTarefa]
+        }));
+        // Atualiza o card do dia na home também
+        setDias(prev => prev.map(d =>
+            d.id === selectedDia?.id
+                ? { ...d, tarefas: [...(d.tarefas || []), novaTarefa] }
+                : d
+        ));
+    }, [selectedDia?.id]);
+
     const formatarDuracao = useCallback((min) => {
         if (!min || min === 0) return '0h00m';
         const h = Math.floor(min / 60);
@@ -305,7 +319,6 @@ const LandingPage = () => {
 
     const converterHorasParaMinutos = useCallback((horasStr) => {
         if (!horasStr || horasStr === '00:00') return 0;
-
         const [horas, minutos] = horasStr.split(':').map(Number);
         return (horas * 60) + minutos;
     }, []);
@@ -317,22 +330,15 @@ const LandingPage = () => {
     }, [formatarDuracao]);
 
     const calcularTotalTarefasApontadas = useCallback((tarefas) => {
-        if (!Array.isArray(tarefas) || tarefas.length === 0) {
-            return '0h00m';
-        }
-
+        if (!Array.isArray(tarefas) || tarefas.length === 0) return '0h00m';
         const totalMinutos = tarefas
             .filter(tarefa => tarefa.apontado === true)
             .reduce((acc, tarefa) => acc + (tarefa.duracaoMin ?? 0), 0);
-
         return formatarDuracao(totalMinutos);
     }, [formatarDuracao]);
 
     const calcularTotalTarefasApontadasMinutos = useCallback((tarefas) => {
-        if (!Array.isArray(tarefas) || tarefas.length === 0) {
-            return 0;
-        }
-
+        if (!Array.isArray(tarefas) || tarefas.length === 0) return 0;
         return tarefas
             .filter(tarefa => tarefa.apontado === true)
             .reduce((acc, tarefa) => acc + (tarefa.duracaoMin ?? 0), 0);
@@ -341,14 +347,9 @@ const LandingPage = () => {
     const diaComHorasPendentes = useCallback((dia) => {
         const tarefas = dia.tarefas || [];
 
-        // Se todas as tarefas existentes estão apontadas, considera completo
-        if (tarefas.length > 0 && tarefas.every(t => t.apontado)) {
-            return false;
-        }
+        if (tarefas.length > 0 && tarefas.every(t => t.apontado)) return false;
 
-        if (!dia.inicioTrabalho || !dia.fimTrabalho) {
-            return true;
-        }
+        if (!dia.inicioTrabalho || !dia.fimTrabalho) return true;
 
         const horasTrabalhadas = calcularHorasTrabalhadas(dia);
         const minutosTrabalho = converterHorasParaMinutos(horasTrabalhadas);
@@ -377,14 +378,12 @@ const LandingPage = () => {
         setError('');
     }, []);
 
-    // NOVO: Ordena tarefas alfabeticamente, com não apontadas sempre primeiro
     const ordenarTarefas = useCallback((tarefas) => {
         if (!tarefas || tarefas.length === 0) return tarefas;
 
         const naoApontadas = tarefas.filter(t => !t.apontado).sort((a, b) =>
             (a.descricao || '').localeCompare(b.descricao || '', 'pt-BR')
         );
-
         const apontadas = tarefas.filter(t => t.apontado).sort((a, b) =>
             (a.descricao || '').localeCompare(b.descricao || '', 'pt-BR')
         );
@@ -392,7 +391,6 @@ const LandingPage = () => {
         return [...naoApontadas, ...apontadas];
     }, []);
 
-    // MODIFICADO: Aplica filtro baseado na opção selecionada
     const diasRecentes = useMemo(() => {
         let diasFiltrados = dias;
 
@@ -401,60 +399,35 @@ const LandingPage = () => {
         } else if (filtroStatus === 'completos') {
             diasFiltrados = dias.filter(dia => !diaComHorasPendentes(dia));
         }
-        // Se filtroStatus === 'todos', mostra todos sem filtrar
 
         return diasFiltrados.slice(-10).reverse();
     }, [dias, filtroStatus, diaComHorasPendentes]);
 
-    // NOVO: Contador para cada tipo
     const contadores = useMemo(() => {
         const pendentes = dias.filter(diaComHorasPendentes).length;
         const completos = dias.filter(dia => !diaComHorasPendentes(dia)).length;
-
-        return {
-            todos: dias.length,
-            pendentes,
-            completos
-        };
+        return { todos: dias.length, pendentes, completos };
     }, [dias, diaComHorasPendentes]);
 
-    // NOVO: Título dinâmico baseado no filtro
     const getTitulo = () => {
         switch (filtroStatus) {
-            case 'todos':
-                return 'Todos os Dias';
-            case 'pendentes':
-                return 'Dias Pendentes';
-            case 'completos':
-                return 'Dias Completos';
-            default:
-                return 'Dias';
+            case 'todos': return 'Todos os Dias';
+            case 'pendentes': return 'Dias Pendentes';
+            case 'completos': return 'Dias Completos';
+            default: return 'Dias';
         }
     };
 
-    // NOVO: Mensagem vazia baseada no filtro
     const getMensagemVazia = () => {
         switch (filtroStatus) {
             case 'todos':
-                return {
-                    title: 'Nenhum dia registrado ainda',
-                    subtitle: 'Clique em "Hoje" ou selecione uma data acima'
-                };
+                return { title: 'Nenhum dia registrado ainda', subtitle: 'Clique em "Hoje" ou selecione uma data acima' };
             case 'pendentes':
-                return {
-                    title: 'Nenhum dia pendente',
-                    subtitle: 'Todos os dias estão com horas completas!'
-                };
+                return { title: 'Nenhum dia pendente', subtitle: 'Todos os dias estão com horas completas!' };
             case 'completos':
-                return {
-                    title: 'Nenhum dia completo ainda',
-                    subtitle: 'Complete os apontamentos para vê-los aqui'
-                };
+                return { title: 'Nenhum dia completo ainda', subtitle: 'Complete os apontamentos para vê-los aqui' };
             default:
-                return {
-                    title: 'Nenhum dia encontrado',
-                    subtitle: ''
-                };
+                return { title: 'Nenhum dia encontrado', subtitle: '' };
         }
     };
 
@@ -469,6 +442,12 @@ const LandingPage = () => {
                         <SeletorData onSelecionar={criarOuCarregarDia} loading={loading} />
                         <ExportarExcel onExportar={exportarExcel} exporting={exporting} />
 
+                        {/* Backlog visível na home — sem dia aberto, botão "Fazer hoje" oculto */}
+                        <BacklogPanel
+                            diaAtualId={null}
+                            onTarefaConvertida={null}
+                        />
+
                         <section className="card">
                             <div className="section-header-with-filter">
                                 <h2 className="section-title">
@@ -478,7 +457,6 @@ const LandingPage = () => {
                                     {getTitulo()}
                                 </h2>
 
-                                {/* NOVO: Filtro com opções */}
                                 <div className="filter-group">
                                     <Filter className="icon-sm filter-icon" />
                                     <div className="filter-options">
@@ -553,7 +531,13 @@ const LandingPage = () => {
 
                 {view === 'detalhes' && selectedDia && (
                     <div className="detalhes-grid">
-                        {/* ... resto do código permanece igual ... */}
+
+                        {/* Backlog no topo dos detalhes — com diaAtualId, botão "Fazer hoje" aparece */}
+                        <BacklogPanel
+                            diaAtualId={selectedDia.id}
+                            onTarefaConvertida={handleTarefaConvertida}
+                        />
+
                         <section className="card">
                             <h2 className="section-title">
                                 <div className="section-icon">
@@ -629,7 +613,6 @@ const LandingPage = () => {
                                                 {calcularTotalTarefas(selectedDia.tarefas)}
                                             </p>
                                         </div>
-
                                         <div className="tarefas-total">
                                             <p className="tarefas-total-label">Total apontado:</p>
                                             <p className="tarefas-total-value">
@@ -765,6 +748,6 @@ const LandingPage = () => {
             </main>
         </div>
     );
-}
+};
 
 export default LandingPage;
