@@ -10,9 +10,12 @@ const DiaCard = ({
     calcularTotalTarefasApontadas,
     obterDataFormatada
 }) => (
-    <button
+    <div
         onClick={() => onSelecionar(dia)}
         className="dia-card"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && onSelecionar(dia)}
     >
         <div className="dia-card-content">
             <div className="dia-card-info">
@@ -72,7 +75,7 @@ const DiaCard = ({
                 </button>
             </div>
         </div>
-    </button>
+    </div>
 );
 
 export default DiaCard;

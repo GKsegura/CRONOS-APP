@@ -17,6 +17,7 @@ const LandingPage = () => {
 
     const [clientes, setClientes] = useState([]);
     const [categorias, setCategorias] = useState([]);
+    const [updatingTaskId, setUpdatingTaskId] = useState(null);
 
     const [novaTaskForm, setNovaTaskForm] = useState({
         descricao: '',
@@ -53,7 +54,7 @@ const LandingPage = () => {
         try {
             setLoading(true);
             setError('');
-            const data = await diasAPI.getMesAtualEAnterior();
+            const data = await diasAPI.getMesAtual();
             setDias(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Erro ao carregar dias:', err);
@@ -124,6 +125,36 @@ const LandingPage = () => {
         }
 
         return true;
+    };
+
+    const handleToggleApontado = async (taskId, novoValor) => {
+        try {
+            setUpdatingTaskId(taskId);
+            setError('');
+
+            const tarefaAtual = selectedDia.tarefas.find(t => t.id === taskId);
+
+            await tarefasAPI.update(taskId, {
+                descricao: tarefaAtual.descricao,
+                categoria: tarefaAtual.categoria,
+                cliente: tarefaAtual.cliente,
+                duracaoMin: tarefaAtual.duracaoMin,
+                obs: tarefaAtual.obs,
+                apontado: novoValor
+            });
+
+            const dia = await diasAPI.getById(selectedDia.id);
+            setSelectedDia(dia);
+            setDias(prev =>
+                prev.map(d => d.id === dia.id ? dia : d)
+            );
+
+        } catch (err) {
+            console.error('Erro ao atualizar apontado:', err);
+            setError('Erro ao atualizar status: ' + err.message);
+        } finally {
+            setUpdatingTaskId(null);
+        }
     };
 
     const adicionarTarefa = async () => {
@@ -723,6 +754,8 @@ const LandingPage = () => {
                                             tarefa={tarefa}
                                             onEditar={iniciarEdicao}
                                             onRemover={removerTarefa}
+                                            onToggleApontado={handleToggleApontado}
+                                            updatingTaskId={updatingTaskId}
                                             editingTask={editingTask}
                                             editForm={editForm}
                                             onEditFormChange={setEditForm}

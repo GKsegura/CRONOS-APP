@@ -109,3 +109,27 @@
 .task-actions .btn {
     flex: 1;
 }
+
+.btn-icon-copy {
+    background-color: #e0f2fe;
+    color: #0284c7;
+}
+
+.btn-icon-copy:hover {
+    background-color: #bae6fd;
+}
+
+.clickable {
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.2s;
+}
+
+.clickable:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+.badge-gray {
+    background-color: #e5e7eb;
+    color: #374151;
+}
