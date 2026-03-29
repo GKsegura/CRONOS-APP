@@ -274,6 +274,14 @@
     color: white;
 }
 
+.filter-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    margin: 0 4px;
+    align-self: center;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .horarios-grid {

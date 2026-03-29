@@ -14,6 +14,7 @@ const LandingPage = () => {
     const [savingTask, setSavingTask] = useState(false);
     const [exporting, setExporting] = useState(false);
     const [filtroStatus, setFiltroStatus] = useState('pendentes');
+    const [ordenacao, setOrdenacao] = useState('recente');
 
     const [clientes, setClientes] = useState([]);
     const [categorias, setCategorias] = useState([]);
@@ -431,8 +432,12 @@ const LandingPage = () => {
             diasFiltrados = dias.filter(dia => !diaComHorasPendentes(dia));
         }
 
-        return diasFiltrados.slice(-10).reverse();
-    }, [dias, filtroStatus, diaComHorasPendentes]);
+        return [...diasFiltrados].sort((a, b) => {
+            const dataA = new Date(a.data);
+            const dataB = new Date(b.data);
+            return ordenacao === 'recente' ? dataB - dataA : dataA - dataB;
+        });
+    }, [dias, filtroStatus, ordenacao, diaComHorasPendentes]);
 
     const contadores = useMemo(() => {
         const pendentes = dias.filter(diaComHorasPendentes).length;
@@ -515,6 +520,19 @@ const LandingPage = () => {
                                             {contadores.completos > 0 && (
                                                 <span className="filter-badge badge-success">{contadores.completos}</span>
                                             )}
+                                        </button>
+                                        <span className="filter-separator" />
+                                        <button
+                                            className={`filter-btn ${ordenacao === 'recente' ? 'active' : ''}`}
+                                            onClick={() => setOrdenacao('recente')}
+                                        >
+                                            Mais recente
+                                        </button>
+                                        <button
+                                            className={`filter-btn ${ordenacao === 'antigo' ? 'active' : ''}`}
+                                            onClick={() => setOrdenacao('antigo')}
+                                        >
+                                            Mais antigo
                                         </button>
                                     </div>
                                 </div>
