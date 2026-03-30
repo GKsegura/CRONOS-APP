@@ -303,13 +303,11 @@ const LandingPage = () => {
         }
     };
 
-    // Chamado pelo BacklogPanel quando uma tarefa é convertida para o dia aberto
     const handleTarefaConvertida = useCallback((novaTarefa) => {
         setSelectedDia(prev => ({
             ...prev,
             tarefas: [...(prev.tarefas || []), novaTarefa]
         }));
-        // Atualiza o card do dia na home também
         setDias(prev => prev.map(d =>
             d.id === selectedDia?.id
                 ? { ...d, tarefas: [...(d.tarefas || []), novaTarefa] }
@@ -379,17 +377,13 @@ const LandingPage = () => {
     const diaComHorasPendentes = useCallback((dia) => {
         const tarefas = dia.tarefas || [];
 
-        if (tarefas.length > 0 && tarefas.every(t => t.apontado)) return false;
-
         if (!dia.inicioTrabalho || !dia.fimTrabalho) return true;
 
         const horasTrabalhadas = calcularHorasTrabalhadas(dia);
         const minutosTrabalho = converterHorasParaMinutos(horasTrabalhadas);
         const minutosApontados = calcularTotalTarefasApontadasMinutos(tarefas);
 
-        if (minutosApontados === 0) return true;
-
-        return Math.abs(minutosTrabalho - minutosApontados) > 5;
+        return Math.abs(minutosTrabalho - minutosApontados) > 0;
     }, [calcularHorasTrabalhadas, converterHorasParaMinutos, calcularTotalTarefasApontadasMinutos]);
 
     const obterDataFormatada = useCallback((dia) => {
@@ -423,6 +417,12 @@ const LandingPage = () => {
         return [...naoApontadas, ...apontadas];
     }, []);
 
+    const parseData = useCallback((dataStr) => {
+        if (!dataStr) return new Date(0);
+        const [day, month, year] = dataStr.split('/').map(Number);
+        return new Date(year, month - 1, day);
+    }, []);
+
     const diasRecentes = useMemo(() => {
         let diasFiltrados = dias;
 
@@ -433,11 +433,11 @@ const LandingPage = () => {
         }
 
         return [...diasFiltrados].sort((a, b) => {
-            const dataA = new Date(a.data);
-            const dataB = new Date(b.data);
+            const dataA = parseData(a.data);
+            const dataB = parseData(b.data);
             return ordenacao === 'recente' ? dataB - dataA : dataA - dataB;
         });
-    }, [dias, filtroStatus, ordenacao, diaComHorasPendentes]);
+    }, [dias, filtroStatus, ordenacao, diaComHorasPendentes, parseData]);
 
     const contadores = useMemo(() => {
         const pendentes = dias.filter(diaComHorasPendentes).length;
