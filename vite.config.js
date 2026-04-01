@@ -5,7 +5,6 @@ import { defineConfig } from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -16,6 +15,9 @@ export default defineConfig({
       '@pages': path.resolve(__dirname, './src/pages'),
       '@styles': path.resolve(__dirname, './src/styles'),
       '@api': path.resolve(__dirname, './src/api'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@views': path.resolve(__dirname, './src/views'),
+      '@utils': path.resolve(__dirname, './src/utils'),
     },
   },
 })
