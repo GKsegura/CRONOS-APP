@@ -1,22 +1,37 @@
 import { ArrowLeft, Clock } from 'lucide-react';
+import '../styles/components.css';
 import './Header.css';
+import { SeletorTema } from './SeletorTema';
 
-const Header = ({ view, onVoltar }) => (
+const Header = ({ view, onVoltar, dia }) => (
     <header className="header">
         <div className="header-container">
             <div className="header-content">
+
                 <div className="header-brand">
                     <div className="header-icon">
                         <Clock className="icon" />
                     </div>
-                    <h1 className="header-title">CRONOS</h1>
+                    <div>
+                        <h1 className="header-title">CRONOS</h1>
+                        {dia && (
+                            <span className="header-dia-data">
+                                {dia.data}
+                            </span>
+                        )}
+                    </div>
                 </div>
-                {view !== 'home' && (
-                    <button onClick={onVoltar} className="btn-voltar">
-                        <ArrowLeft className="icon-sm" />
-                        Voltar
-                    </button>
-                )}
+
+                <div className="header-actions">
+                    <SeletorTema />
+                    {view !== 'home' && (
+                        <button onClick={onVoltar} className="btn-voltar">
+                            <ArrowLeft className="icon-sm" />
+                            Voltar
+                        </button>
+                    )}
+                </div>
+
             </div>
         </div>
     </header>

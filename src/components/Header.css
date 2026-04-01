@@ -71,3 +71,15 @@
     width: var(--icon-sm);
     height: var(--icon-sm);
 }
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.header-dia-data {
+    font-size: var(--font-sm);
+    color: var(--gray-500);
+    font-weight: var(--font-weight-medium);
+}
