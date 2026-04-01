@@ -1,3 +1,5 @@
+@import "../styles/variables.css";
+
 .backlog-card {
     background: var(--background-color);
     border-radius: var(--border-radius-xl);
@@ -18,12 +20,12 @@
 }
 
 .backlog-card-vencido {
-    border-color: var(--danger-300);
+    border-color: var(--danger-200);
     background: var(--danger-50);
 }
 
 .backlog-card-proximo {
-    border-color: var(--orange-300);
+    border-color: var(--orange-100);
     background: var(--orange-50);
 }
 

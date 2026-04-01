@@ -1,15 +1,13 @@
-import { CheckSquare, Clock, Trash2 } from "lucide-react";
-import './DiaCard.css';
-
-const DiaCard = ({
-    dia,
-    onSelecionar,
-    onExcluir,
+import {
     calcularHorasTrabalhadas,
     calcularTotalTarefas,
     calcularTotalTarefasApontadas,
-    obterDataFormatada
-}) => (
+    obterDataFormatada,
+} from '@utils';
+import { CheckSquare, Clock, Trash2 } from 'lucide-react';
+import './DiaCard.css';
+
+const DiaCard = ({ dia, onSelecionar, onExcluir }) => (
     <div
         onClick={() => onSelecionar(dia)}
         className="dia-card"
@@ -53,21 +51,16 @@ const DiaCard = ({
                     </div>
                     <p className="stats-label">tarefas</p>
                 </div>
-                {dia.tarefas && dia.tarefas.length > 0 && (
+
+                {dia.tarefas?.length > 0 && (
                     <>
-                        <p className="stats-duracao">
-                            Total: {calcularTotalTarefas(dia.tarefas)}
-                        </p>
-                        <p className="stats-duracao">
-                            Apontado: {calcularTotalTarefasApontadas(dia.tarefas)}
-                        </p>
+                        <p className="stats-duracao">Total: {calcularTotalTarefas(dia.tarefas)}</p>
+                        <p className="stats-duracao">Apontado: {calcularTotalTarefasApontadas(dia.tarefas)}</p>
                     </>
                 )}
+
                 <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onExcluir(dia.id);
-                    }}
+                    onClick={(e) => { e.stopPropagation(); onExcluir(dia.id); }}
                     className="btn-excluir"
                 >
                     <Trash2 className="icon-sm" />
