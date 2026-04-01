@@ -1,4 +1,4 @@
-import { ChevronDown, Palette } from 'lucide-react';
+import { ChevronDown, Moon, Sun } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { TEMAS, useTema } from '../context/ThemeContext';
 import '../styles/components.css';
@@ -10,6 +10,10 @@ export function SeletorTema() {
     const ref = useRef(null);
 
     const temaAtual = TEMAS.find((t) => t.id === tema);
+
+    // Seleciona o ícone dinamicamente baseado no tema atual
+    // Moon para temas escuros, Sun para temas claros
+    const IconeTema = tema.includes('dark') ? Moon : Sun;
 
     useEffect(() => {
         const handleClickFora = (e) => {
@@ -27,8 +31,8 @@ export function SeletorTema() {
                 className="seletor-tema-btn"
                 onClick={() => setAberto(!aberto)}
             >
-                <Palette className="icon-sm seletor-tema-icon" />
-                <span>{temaAtual?.label}</span>
+                <IconeTema className="icon-sm seletor-tema-icon seletor-tema-icon-dinamico" />
+                <span> {temaAtual?.label}</span>
                 <ChevronDown className={`icon-sm seletor-tema-chevron ${aberto ? 'aberto' : ''}`} />
             </button>
 

@@ -27,6 +27,21 @@
     flex-shrink: 0;
 }
 
+.seletor-tema-icon-dinamico {
+    animation: fadeRotate var(--transition-base);
+}
+
+@keyframes fadeRotate {
+    from {
+        opacity: 0.5;
+        transform: rotate(-15deg);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(0deg);
+    }
+}
+
 .seletor-tema-chevron {
     color: var(--gray-500);
     transition: transform var(--transition-base);

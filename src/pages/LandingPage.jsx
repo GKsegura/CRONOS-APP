@@ -3,6 +3,7 @@ import { ErrorAlert, Header } from '@components';
 import { useDias } from '@hooks/useDias';
 import { DetalhesView, HomeView } from '@views';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import './LandingPage.css';
 
 const LandingPage = () => {
@@ -75,9 +76,12 @@ const LandingPage = () => {
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-            alert('Planilha exportada com sucesso!');
+            // alert('Planilha exportada com sucesso!');
+            toast.success('Planilha exportada com sucesso!');
+
         } catch (err) {
-            setError('Erro ao exportar planilha: ' + err.message);
+            // setError('Erro ao exportar planilha: ' + err.message);
+            toast.error('Erro ao exportar planilha: ' + err.message);
         } finally {
             setExporting(false);
         }
