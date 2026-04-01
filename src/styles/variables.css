@@ -197,3 +197,121 @@
     --icon-xl: 1.75rem;
     --icon-2xl: 4rem;
 }
+
+/* ==================== TEMA ESCURO ==================== */
+[data-theme="dark"] {
+    --primary-color: #00c6b9;
+    --primary-light: #33d4ca;
+    --primary-dark: #00a89d;
+    --primary-hover: #00b3a7;
+
+    --background-color: #111827;
+    --secondary-color: #f9fafb;
+
+    --gray-50: #1f2937;
+    --gray-100: #374151;
+    --gray-200: #4b5563;
+    --gray-300: #6b7280;
+    --gray-400: #9ca3af;
+    --gray-500: #d1d5db;
+    --gray-600: #e5e7eb;
+    --gray-700: #f3f4f6;
+    --gray-800: #f9fafb;
+    --gray-900: #ffffff;
+
+    --gradient-bg: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+    --gradient-card: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+    color-scheme: dark;
+}
+
+/* ==================== TEMA ROSA ==================== */
+[data-theme="rosa"] {
+    --primary-color: #e91e8c;
+    --primary-light: #f06292;
+    --primary-dark: #c2185b;
+    --primary-hover: #d81b60;
+
+    --gradient-primary: linear-gradient(135deg, #e91e8c 0%, #f06292 100%);
+    --gradient-primary-reverse: linear-gradient(135deg, #d81b60 0%, #e91e8c 100%);
+    --gradient-primary-horizontal: linear-gradient(to right, #e91e8c, #c2185b);
+    --gradient-primary-horizontal-hover: linear-gradient(to right, #d81b60, #e91e8c);
+    --gradient-primary-text: linear-gradient(to right, #e91e8c, #c2185b);
+    --gradient-primary-bg: linear-gradient(135deg, #e91e8c, #c2185b);
+    --gradient-primary-subtle: linear-gradient(to right, rgba(233, 30, 140, 0.1), rgba(194, 24, 91, 0.1));
+
+    --bg-primary-alpha-10: rgba(233, 30, 140, 0.1);
+    --bg-primary-alpha-20: rgba(233, 30, 140, 0.2);
+    --border-primary-alpha-20: rgba(233, 30, 140, 0.2);
+
+    --shadow-primary: 0 10px 15px -3px rgba(233, 30, 140, 0.3);
+    --shadow-focus-primary: 0 0 0 3px rgba(233, 30, 140, 0.1);
+
+    --primary-dark: #c2185b;
+}
+
+/* ==================== TEMA ESCURO ROSA ==================== */
+[data-theme="dark-rosa"] {
+    --primary-color: #e91e8c;
+    --primary-light: #f06292;
+    --primary-dark: #c2185b;
+    --primary-hover: #d81b60;
+
+    --background-color: #111827;
+    --secondary-color: #f9fafb;
+
+    --gray-50: #1f2937;
+    --gray-100: #374151;
+    --gray-200: #4b5563;
+    --gray-300: #6b7280;
+    --gray-400: #9ca3af;
+    --gray-500: #d1d5db;
+    --gray-600: #e5e7eb;
+    --gray-700: #f3f4f6;
+    --gray-800: #f9fafb;
+    --gray-900: #ffffff;
+
+    --gradient-primary: linear-gradient(135deg, #e91e8c 0%, #f06292 100%);
+    --gradient-primary-horizontal: linear-gradient(to right, #e91e8c, #c2185b);
+    --gradient-primary-horizontal-hover: linear-gradient(to right, #d81b60, #e91e8c);
+    --gradient-primary-text: linear-gradient(to right, #e91e8c, #c2185b);
+    --gradient-primary-bg: linear-gradient(135deg, #e91e8c, #c2185b);
+    --gradient-bg: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+
+    --bg-primary-alpha-10: rgba(233, 30, 140, 0.1);
+    --bg-primary-alpha-20: rgba(233, 30, 140, 0.2);
+    --border-primary-alpha-20: rgba(233, 30, 140, 0.2);
+    --shadow-focus-primary: 0 0 0 3px rgba(233, 30, 140, 0.1);
+    color-scheme: dark;
+}
+
+[data-theme="dark"],
+[data-theme="dark-rosa"] {
+    --danger-50: rgba(239, 68, 68, 0.15);
+    --danger-100: rgba(239, 68, 68, 0.40);
+    --danger-200: rgba(239, 68, 68, 0.55);
+
+    --orange-50: rgba(249, 115, 22, 0.15);
+    --orange-100: rgba(249, 115, 22, 0.40);
+
+    --success-50: rgba(34, 197, 94, 0.15);
+    --success-100: rgba(34, 197, 94, 0.40);
+    --success-200: rgba(34, 197, 94, 0.55);
+
+    --warning-50: rgba(245, 158, 11, 0.15);
+    --warning-100: rgba(245, 158, 11, 0.40);
+
+    --info-50: rgba(59, 130, 246, 0.15);
+    --info-100: rgba(59, 130, 246, 0.40);
+
+    --purple-50: rgba(168, 85, 247, 0.15);
+    --purple-100: rgba(168, 85, 247, 0.40);
+
+    --danger-700: #fca5a5;
+    --orange-700: #fdba74;
+    --success-700: #86efac;
+    --warning-700: #fcd34d;
+    --info-700: #93c5fd;
+    --purple-700: #d8b4fe;
+}
