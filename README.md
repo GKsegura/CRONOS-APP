@@ -266,13 +266,9 @@ Extensão browser recomendada para inspecionar componentes
 - [ ] Dark mode melhorado
 - [ ] i18n (internacionalização)
 
-## 📄 Licença
-
-[Sua Licença Aqui]
-
 ## 👤 Autor
 
-[Seu Nome] - [@seu-github](https://github.com)
+[José Segura] - [@GKsegura](https://github.com/GKsegura)
 
 ---
 
