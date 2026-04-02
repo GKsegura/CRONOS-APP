@@ -1,20 +1,31 @@
 import {
     calcularHorasTrabalhadas,
-    calcularMinutosFaltantes,
     calcularTotalTarefas,
     calcularTotalTarefasApontadas,
+    converterHorasParaMinutos,
     obterDataFormatada,
 } from '@utils';
 import { CheckSquare, Clock, Plus, Trash2 } from 'lucide-react';
 import './DiaCard.css';
 
 const DiaCard = ({ dia, onSelecionar, onExcluir, onAdicionarTarefaPadrao }) => {
-    const temHorasFaltantes = calcularMinutosFaltantes(dia) > 0;
+    // Calcula minutos faltantes
+    const minutosTrabalho = !dia.inicioTrabalho || !dia.fimTrabalho 
+        ? 0 
+        : converterHorasParaMinutos(calcularHorasTrabalhadas(dia));
+    const minutosTarefas = dia.tarefas?.reduce((acc, t) => acc + (t.duracaoMin || 0), 0) || 0;
+    const minutosFaltantes = minutosTrabalho - minutosTarefas;
+    
+    const temHorasFaltantes = minutosFaltantes > 0;
     const temTarefaPadrao = dia.tarefas?.some(
         (t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum'
     );
     const deveMostrarBotao = temHorasFaltantes && !temTarefaPadrao;
-
+    
+    if (minutosFaltantes > 0) {
+        console.log(`🗓️ Card ${obterDataFormatada(dia)}: ${minutosFaltantes}min faltantes, mostra=${deveMostrarBotao}`);
+    }
+    
     return (
         <div
             onClick={() => onSelecionar(dia)}
