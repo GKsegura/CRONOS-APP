@@ -1,18 +1,22 @@
-import axios from 'axios';
+import { API_CONFIG } from '@constants'
+import axios from 'axios'
+import { handleApiError } from './errorHandler'
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api',
+    baseURL: API_CONFIG.BASE_URL,
+    timeout: API_CONFIG.TIMEOUT,
     headers: {
-        'Content-Type': 'application/json',
-    },
-});
+        'Content-Type': 'application/json'
+    }
+})
 
+// Interceptor de resposta com tratamento de erro centralizado
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        console.error('Erro na API:', error);
-        return Promise.reject(error);
+        handleApiError(error)
+        return Promise.reject(error)
     }
-);
+)
 
-export default api;
+export default api
