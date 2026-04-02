@@ -3,6 +3,7 @@ import { BacklogPanel, TaskCard } from '@components';
 import { useTaskForm } from '@hooks/useTaskForm';
 import {
     calcularHorasTrabalhadas,
+    calcularMinutosFaltantes,
     calcularTotalTarefas,
     calcularTotalTarefasApontadas,
     formatarDuracao,
@@ -10,6 +11,7 @@ import {
     ordenarTarefas,
 } from '@utils/tempo';
 import { CheckSquare, Clock, Plus } from 'lucide-react';
+import './DetalhesView.css';
 
 const handleKeyDown = (e, callback) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -26,6 +28,7 @@ const DetalhesView = ({
     clientes,
     categorias,
     onTarefaConvertida,
+    onAdicionarTarefaPadrao,
 }) => {
     const taskForm = useTaskForm({ selectedDia, setSelectedDia, atualizarDiaLocal, setError });
 
@@ -79,6 +82,17 @@ const DetalhesView = ({
                 {selectedDia.inicioTrabalho && selectedDia.fimTrabalho && (
                     <div className="horas-summary">
                         <p className="horas-summary-text">Horas Trabalhadas: {horasTrabalhadas}</p>
+                        {calcularMinutosFaltantes(selectedDia) > 0 &&
+                            !selectedDia.tarefas?.some((t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum') && (
+                                <button
+                                    onClick={() => onAdicionarTarefaPadrao(selectedDia)}
+                                    className="btn-adicionar-padrao-detalhes"
+                                    title="Adicionar atividade padrão"
+                                >
+                                    <Plus className="icon-sm" />
+                                    Atividade Padrão
+                                </button>
+                            )}
                     </div>
                 )}
             </section>

@@ -1,5 +1,6 @@
 export {
     calcularHorasTrabalhadas,
+    calcularMinutosFaltantes,
     calcularTotalTarefas,
     calcularTotalTarefasApontadas,
     calcularTotalTarefasApontadasMinutos,
@@ -10,3 +11,4 @@ export {
     ordenarTarefas,
     parseData
 } from './tempo';
+

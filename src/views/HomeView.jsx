@@ -29,6 +29,7 @@ const HomeView = ({
     onExportar,
     exporting,
     onExcluirDia,
+    onAdicionarTarefaPadrao,
 }) => {
     const mensagemVazia = MENSAGENS_VAZIAS[filtroStatus] ?? { title: 'Nenhum dia encontrado', subtitle: '' };
 
@@ -124,6 +125,7 @@ const HomeView = ({
                                 dia={dia}
                                 onSelecionar={onSelecionarDia}
                                 onExcluir={onExcluirDia}
+                                onAdicionarTarefaPadrao={onAdicionarTarefaPadrao}
                             />
                         ))}
                     </div>

@@ -75,6 +75,16 @@ export const diaComHorasPendentes = (dia) => {
     return Math.abs(minutosTrabalho - minutosApontados) > 0;
 };
 
+// ─── Cálculo de horas pendentes ──────────────────────────────────────────────
+
+export const calcularMinutosFaltantes = (dia) => {
+    if (!dia.inicioTrabalho || !dia.fimTrabalho) return 0;
+    const minutosTrabalho = converterHorasParaMinutos(calcularHorasTrabalhadas(dia));
+    const minutosApontados = calcularTotalTarefasApontadasMinutos(dia.tarefas || []);
+    const faltantes = minutosTrabalho - minutosApontados;
+    return faltantes > 0 ? faltantes : 0;
+};
+
 // ─── Ordenação ───────────────────────────────────────────────────────────────
 
 export const ordenarTarefas = (tarefas) => {

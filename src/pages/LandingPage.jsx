@@ -1,6 +1,7 @@
-import { categoriasAPI, clientesAPI, exportAPI } from '@api';
+import { categoriasAPI, clientesAPI, diasAPI, exportAPI, tarefasAPI } from '@api';
 import { ErrorAlert, Header } from '@components';
 import { useDias } from '@hooks/useDias';
+import { calcularMinutosFaltantes } from '@utils/tempo';
 import { DetalhesView, HomeView } from '@views';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -60,6 +61,47 @@ const LandingPage = () => {
         }));
     }, []);
 
+    // ─── Atividade Padrão ─────────────────────────────────────────────────────
+
+    const handleAdicionarTarefaPadrao = useCallback(async (dia) => {
+        try {
+            setError('');
+            const minutosFaltantes = calcularMinutosFaltantes(dia);
+
+            if (minutosFaltantes <= 0) {
+                toast.info('Não há horas faltantes para este dia');
+                return;
+            }
+
+            const temTarefaPadrao = dia.tarefas?.some(
+                (t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum'
+            );
+
+            if (temTarefaPadrao) {
+                toast.warning('Já existe uma atividade padrão para este dia');
+                return;
+            }
+
+            const tarefa = {
+                descricao: 'ACOMPANHAMENTO E GESTÃO DE CHAMADOS COMO N1, INCLUINDO ANÁLISE DE E-MAILS E WHATSAPP DO SUPORTE, APOIO AO TIME, IDENTIFICAÇÃO DE DIFICULDADES, ORIENTAÇÕES E REALOCAÇÃO DE CHAMADOS.',
+                categoria: 'SUPORTE',
+                cliente: 'Nexum',
+                duracaoMin: minutosFaltantes,
+                obs: '',
+                apontado: false,
+            };
+
+            await tarefasAPI.create(dia.id, tarefa);
+            const diaAtualizado = await diasAPI.getById(dia.id);
+
+            atualizarDiaLocal(diaAtualizado);
+            toast.success(`Atividade padrão adicionada com ${minutosFaltantes} minutos`);
+        } catch (err) {
+            setError('Erro ao adicionar atividade padrão: ' + err.message);
+            toast.error('Erro ao adicionar atividade padrão');
+        }
+    }, [atualizarDiaLocal]);
+
     // ─── Export ──────────────────────────────────────────────────────────────
 
     const exportarExcel = useCallback(async (mes, ano) => {
@@ -110,6 +152,7 @@ const LandingPage = () => {
                         onExportar={exportarExcel}
                         exporting={exporting}
                         onExcluirDia={handleExcluirDia}
+                        onAdicionarTarefaPadrao={handleAdicionarTarefaPadrao}
                         filtroMes={filtroMes}
                         setFiltroMes={setFiltroMes}
                     />
@@ -124,6 +167,7 @@ const LandingPage = () => {
                         clientes={clientes}
                         categorias={categorias}
                         onTarefaConvertida={handleTarefaConvertida}
+                        onAdicionarTarefaPadrao={handleAdicionarTarefaPadrao}
                     />
                 )}
             </main>
