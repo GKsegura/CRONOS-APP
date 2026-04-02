@@ -1,7 +1,7 @@
+import { SeletorTema } from '@components/Common';
+import '@styles/components.css';
 import { ArrowLeft, Clock } from 'lucide-react';
-import '../styles/components.css';
 import './Header.css';
-import { SeletorTema } from './SeletorTema';
 
 const Header = ({ view, onVoltar, dia }) => (
     <header className="header">

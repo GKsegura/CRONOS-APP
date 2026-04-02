@@ -1,7 +1,7 @@
+import { backlogAPI, categoriasAPI, clientesAPI } from '@api';
+import { BacklogCard } from '@components/Cards';
 import { ClipboardList, Plus, Save, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { backlogAPI, categoriasAPI, clientesAPI } from '../api';
-import BacklogCard from './BacklogCard';
 import './BacklogPanel.css';
 
 const formVazio = {
