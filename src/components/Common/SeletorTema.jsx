@@ -1,10 +1,10 @@
+import { TEMAS, useTema } from '@context/ThemeContext';
+import '@styles/components.css';
 import { ChevronDown, Moon, Sun } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { TEMAS, useTema } from '../context/ThemeContext';
-import '../styles/components.css';
 import './SeletorTema.css';
 
-export function SeletorTema() {
+export default function SeletorTema() {
     const { tema, setTema } = useTema();
     const [aberto, setAberto] = useState(false);
     const ref = useRef(null);
