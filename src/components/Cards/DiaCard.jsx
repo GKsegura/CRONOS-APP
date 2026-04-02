@@ -10,22 +10,28 @@ import './DiaCard.css';
 
 const DiaCard = ({ dia, onSelecionar, onExcluir, onAdicionarTarefaPadrao }) => {
     // Calcula minutos faltantes
-    const minutosTrabalho = !dia.inicioTrabalho || !dia.fimTrabalho 
-        ? 0 
+    const minutosTrabalho = !dia.inicioTrabalho || !dia.fimTrabalho
+        ? 0
         : converterHorasParaMinutos(calcularHorasTrabalhadas(dia));
     const minutosTarefas = dia.tarefas?.reduce((acc, t) => acc + (t.duracaoMin || 0), 0) || 0;
     const minutosFaltantes = minutosTrabalho - minutosTarefas;
-    
+
     const temHorasFaltantes = minutosFaltantes > 0;
     const temTarefaPadrao = dia.tarefas?.some(
-        (t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum'
+        (t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum' && t.descricao === 'ACOMPANHAMENTO E GESTÃO DE CHAMADOS COMO N1, INCLUINDO ANÁLISE DE E-MAILS E WHATSAPP DO SUPORTE, APOIO AO TIME, IDENTIFICAÇÃO DE DIFICULDADES, ORIENTAÇÕES E REALOCAÇÃO DE CHAMADOS.'
     );
     const deveMostrarBotao = temHorasFaltantes && !temTarefaPadrao;
-    
-    if (minutosFaltantes > 0) {
-        console.log(`🗓️ Card ${obterDataFormatada(dia)}: ${minutosFaltantes}min faltantes, mostra=${deveMostrarBotao}`);
-    }
-    
+
+    console.log(`📋 ${obterDataFormatada(dia)}:`, {
+        horas: calcularHorasTrabalhadas(dia),
+        minutosTrabalho,
+        minutosTarefas,
+        minutosFaltantes,
+        temHorasFaltantes,
+        temTarefaPadrao,
+        deveMostrarBotao
+    });
+
     return (
         <div
             onClick={() => onSelecionar(dia)}

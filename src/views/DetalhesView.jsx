@@ -3,15 +3,16 @@ import { BacklogPanel, TaskCard } from '@components';
 import { useTaskForm } from '@hooks/useTaskForm';
 import {
     calcularHorasTrabalhadas,
-    calcularMinutosFaltantes,
     calcularTotalTarefas,
     calcularTotalTarefasApontadas,
+    converterHorasParaMinutos,
     formatarDuracao,
     obterDataFormatada,
-    ordenarTarefas,
+    ordenarTarefas
 } from '@utils/tempo';
 import { CheckSquare, Clock, Plus } from 'lucide-react';
 import './DetalhesView.css';
+
 
 const handleKeyDown = (e, callback) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -82,8 +83,15 @@ const DetalhesView = ({
                 {selectedDia.inicioTrabalho && selectedDia.fimTrabalho && (
                     <div className="horas-summary">
                         <p className="horas-summary-text">Horas Trabalhadas: {horasTrabalhadas}</p>
-                        {calcularMinutosFaltantes(selectedDia) > 0 &&
-                            !selectedDia.tarefas?.some((t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum') && (
+                        {(() => {
+                            const minutosTrabalho = converterHorasParaMinutos(horasTrabalhadas);
+                            const minutosTarefas = selectedDia.tarefas?.reduce((acc, t) => acc + (t.duracaoMin || 0), 0) || 0;
+                            const minutosFaltantes = minutosTrabalho - minutosTarefas;
+                            const temTarefaPadrao = selectedDia.tarefas?.some((t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum' && t.descricao === 'ACOMPANHAMENTO E GESTÃO DE CHAMADOS COMO N1, INCLUINDO ANÁLISE DE E-MAILS E WHATSAPP DO SUPORTE, APOIO AO TIME, IDENTIFICAÇÃO DE DIFICULDADES, ORIENTAÇÕES E REALOCAÇÃO DE CHAMADOS.');
+
+                            console.log(`📅 ${obterDataFormatada(selectedDia)}: trabalho=${minutosTrabalho}min, tarefas=${minutosTarefas}min, faltantes=${minutosFaltantes}min, temPadrão=${temTarefaPadrao}`);
+
+                            return minutosFaltantes > 0 && !temTarefaPadrao && (
                                 <button
                                     onClick={() => onAdicionarTarefaPadrao(selectedDia)}
                                     className="btn-adicionar-padrao-detalhes"
@@ -92,9 +100,16 @@ const DetalhesView = ({
                                     <Plus className="icon-sm" />
                                     Atividade Padrão
                                 </button>
-                            )}
+                            );
+                        })()}
                     </div>
                 )}
+
+                {!selectedDia.inicioTrabalho || !selectedDia.fimTrabalho ? (
+                    <p style={{ color: 'var(--gray-500)', fontSize: 'var(--font-sm)', marginTop: 'var(--spacing-md)' }}>
+                        💡 Adicione seus horários de trabalho para usar a atividade padrão
+                    </p>
+                ) : null}
             </section>
 
             {/* ── Tarefas ──────────────────────────────────────────────────── */}

@@ -70,12 +70,13 @@ export const calcularTotalTarefasApontadas = (tarefas) =>
 
 export const diaComHorasPendentes = (dia) => {
     if (!dia.inicioTrabalho || !dia.fimTrabalho) return true;
+    const minutosTrabalho = converterHorasParaMinutos(calcularHorasTrabalhadas(dia));
     const minutosTarefas = dia.tarefas?.reduce((acc, t) => acc + (t.duracaoMin || 0), 0) || 0;
     const minutosApontados = calcularTotalTarefasApontadasMinutos(dia.tarefas || []);
-    
-    // Dia pendente: Total de tarefas ≠ Apontado
-    // Dia completo: Total = Apontado
-    return minutosTarefas !== minutosApontados;
+
+    // Dia completo: Total = Apontado = Horas Trabalhadas
+    // Dia pendente: qualquer desvio
+    return minutosTrabalho !== minutosTarefas || minutosTarefas !== minutosApontados;
 };
 
 // ─── Cálculo de horas pendentes ──────────────────────────────────────────────

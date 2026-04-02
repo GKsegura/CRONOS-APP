@@ -2,7 +2,7 @@ import { categoriasAPI, clientesAPI, diasAPI, exportAPI, tarefasAPI } from '@api
 import { ErrorAlert, Header } from '@components';
 import { useDias } from '@hooks/useDias';
 import { calcularMinutosFaltantes } from '@utils/tempo';
-import { DetalhesView, HomeView } from '@views';
+import { DetalhesView, HomeView, SearchTasksView } from '@views';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import './LandingPage.css';
@@ -32,6 +32,12 @@ const LandingPage = () => {
 
     const handleVoltar = useCallback(() => {
         setView('home');
+        setSelectedDia(null);
+        setError('');
+    }, [setError]);
+
+    const handleGoToSearch = useCallback(() => {
+        setView('search');
         setSelectedDia(null);
         setError('');
     }, [setError]);
@@ -74,7 +80,7 @@ const LandingPage = () => {
             }
 
             const temTarefaPadrao = dia.tarefas?.some(
-                (t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum'
+                (t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum' && t.descricao === 'ACOMPANHAMENTO E GESTÃO DE CHAMADOS COMO N1, INCLUINDO ANÁLISE DE E-MAILS E WHATSAPP DO SUPORTE, APOIO AO TIME, IDENTIFICAÇÃO DE DIFICULDADES, ORIENTAÇÕES E REALOCAÇÃO DE CHAMADOS.'
             );
 
             if (temTarefaPadrao) {
@@ -133,7 +139,7 @@ const LandingPage = () => {
 
     return (
         <div className="app-container">
-            <Header view={view} onVoltar={handleVoltar} dia={selectedDia} />
+            <Header view={view} onVoltar={handleVoltar} onGoToSearch={handleGoToSearch} dia={selectedDia} />
             <ErrorAlert error={error} onClose={() => setError('')} />
 
             <main className="main-content">
@@ -169,6 +175,10 @@ const LandingPage = () => {
                         onTarefaConvertida={handleTarefaConvertida}
                         onAdicionarTarefaPadrao={handleAdicionarTarefaPadrao}
                     />
+                )}
+
+                {view === 'search' && (
+                    <SearchTasksView dias={dias} />
                 )}
             </main>
         </div>

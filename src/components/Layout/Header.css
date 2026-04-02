@@ -67,6 +67,25 @@
     box-shadow: var(--shadow-md);
 }
 
+.btn-search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-lg);
+    background: rgba(0, 212, 212, 0.1);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.btn-search:hover {
+    background: var(--primary-color);
+    color: var(--background-color);
+    box-shadow: var(--shadow-md);
+}
+
 .icon-sm {
     width: var(--icon-sm);
     height: var(--icon-sm);
