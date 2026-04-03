@@ -1,6 +1,6 @@
-import { Search, CheckSquare, Clock, User, Tag } from 'lucide-react';
-import { useState, useMemo } from 'react';
 import { formatarDuracao } from '@utils/tempo';
+import { Clock, Search, Tag, User } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import './SearchTasksView.css';
 
 const SearchTasksView = ({ dias = [] }) => {
