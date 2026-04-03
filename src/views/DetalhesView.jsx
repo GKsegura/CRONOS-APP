@@ -87,7 +87,7 @@ const DetalhesView = ({
                             const minutosTrabalho = converterHorasParaMinutos(horasTrabalhadas);
                             const minutosTarefas = selectedDia.tarefas?.reduce((acc, t) => acc + (t.duracaoMin || 0), 0) || 0;
                             const minutosFaltantes = minutosTrabalho - minutosTarefas;
-                            const temTarefaPadrao = selectedDia.tarefas?.some((t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum' && t.descricao === 'ACOMPANHAMENTO E GESTÃO DE CHAMADOS COMO N1, INCLUINDO ANÁLISE DE E-MAILS E WHATSAPP DO SUPORTE, APOIO AO TIME, IDENTIFICAÇÃO DE DIFICULDADES, ORIENTAÇÕES E REALOCAÇÃO DE CHAMADOS.');
+                            const temTarefaPadrao = temTarefaPadrao(selectedDia);
 
                             console.log(`📅 ${obterDataFormatada(selectedDia)}: trabalho=${minutosTrabalho}min, tarefas=${minutosTarefas}min, faltantes=${minutosFaltantes}min, temPadrão=${temTarefaPadrao}`);
 

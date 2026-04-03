@@ -6,6 +6,7 @@ import {
     obterDataFormatada,
 } from '@utils';
 import { CheckSquare, Clock, Plus, Trash2 } from 'lucide-react';
+import { temTarefaPadrao } from 'src/utils';
 import './DiaCard.css';
 
 const DiaCard = ({ dia, onSelecionar, onExcluir, onAdicionarTarefaPadrao }) => {
@@ -17,20 +18,7 @@ const DiaCard = ({ dia, onSelecionar, onExcluir, onAdicionarTarefaPadrao }) => {
     const minutosFaltantes = minutosTrabalho - minutosTarefas;
 
     const temHorasFaltantes = minutosFaltantes > 0;
-    const temTarefaPadrao = dia.tarefas?.some(
-        (t) => t.categoria === 'SUPORTE' && t.cliente === 'Nexum' && t.descricao === 'ACOMPANHAMENTO E GESTÃO DE CHAMADOS COMO N1, INCLUINDO ANÁLISE DE E-MAILS E WHATSAPP DO SUPORTE, APOIO AO TIME, IDENTIFICAÇÃO DE DIFICULDADES, ORIENTAÇÕES E REALOCAÇÃO DE CHAMADOS.'
-    );
-    const deveMostrarBotao = temHorasFaltantes && !temTarefaPadrao;
-
-    console.log(`📋 ${obterDataFormatada(dia)}:`, {
-        horas: calcularHorasTrabalhadas(dia),
-        minutosTrabalho,
-        minutosTarefas,
-        minutosFaltantes,
-        temHorasFaltantes,
-        temTarefaPadrao,
-        deveMostrarBotao
-    });
+    const deveMostrarBotao = temHorasFaltantes && !temTarefaPadrao(dia);
 
     return (
         <div
