@@ -1,5 +1,5 @@
 import { diasAPI } from '@api';
-import { BacklogPanel, TaskCard } from '@components';
+import { BacklogPanel, InputHora, TaskCard } from '@components';
 import { useTaskForm } from '@hooks/useTaskForm';
 import {
     calcularHorasTrabalhadas,
@@ -70,10 +70,9 @@ const DetalhesView = ({
                     ].map(({ label, campo }) => (
                         <div key={campo} className="form-group">
                             <label className="form-label">{label}</label>
-                            <input
-                                type="time"
+                            <InputHora
                                 value={selectedDia[campo] || ''}
-                                onChange={(e) => atualizarTempo(campo, e.target.value)}
+                                onChange={(valor) => atualizarTempo(campo, valor)}
                                 className="input"
                             />
                         </div>
@@ -88,8 +87,6 @@ const DetalhesView = ({
                             const minutosTarefas = selectedDia.tarefas?.reduce((acc, t) => acc + (t.duracaoMin || 0), 0) || 0;
                             const minutosFaltantes = minutosTrabalho - minutosTarefas;
                             const tarefaPadrao = temTarefaPadrao(selectedDia);
-
-                            console.log(`📅 ${obterDataFormatada(selectedDia)}: trabalho=${minutosTrabalho}min, tarefas=${minutosTarefas}min, faltantes=${minutosFaltantes}min, temPadrão=${tarefaPadrao}`);
 
                             return minutosFaltantes > 0 && !tarefaPadrao && (
                                 <button

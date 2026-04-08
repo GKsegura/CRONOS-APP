@@ -14,4 +14,5 @@ export { default as ErrorAlert } from './Common/ErrorAlert'
 export { default as ExportarExcel } from './Common/ExportarExcel'
 export { default as SeletorData } from './Common/SeletorData'
 export { default as SeletorTema } from './Common/SeletorTema'
+export { InputHora } from './InputHora'
 
