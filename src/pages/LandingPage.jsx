@@ -1,7 +1,7 @@
 import { categoriasAPI, clientesAPI, diasAPI, exportAPI, tarefasAPI } from '@api';
 import { ErrorAlert, Header } from '@components';
 import { useDias } from '@hooks/useDias';
-import { calcularMinutosFaltantes } from '@utils/tempo';
+import { calcularMinutosFaltantes, temTarefaPadrao } from '@utils';
 import { DetalhesView, HomeView, SearchTasksView } from '@views';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -79,9 +79,9 @@ const LandingPage = () => {
                 return;
             }
 
-            const temTarefaPadrao = temTarefaPadrao(dia);
+            const TarefaPadrao = temTarefaPadrao(dia);
 
-            if (temTarefaPadrao) {
+            if (TarefaPadrao) {
                 toast.warning('Já existe uma atividade padrão para este dia');
                 return;
             }
@@ -103,6 +103,7 @@ const LandingPage = () => {
         } catch (err) {
             setError('Erro ao adicionar atividade padrão: ' + err.message);
             toast.error('Erro ao adicionar atividade padrão');
+            console.error(err);
         }
     }, [atualizarDiaLocal]);
 

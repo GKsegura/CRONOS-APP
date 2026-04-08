@@ -8,11 +8,11 @@ import {
     converterHorasParaMinutos,
     formatarDuracao,
     obterDataFormatada,
-    ordenarTarefas
-} from '@utils/tempo';
+    ordenarTarefas,
+    temTarefaPadrao
+} from '@utils';
 import { CheckSquare, Clock, Plus } from 'lucide-react';
 import './DetalhesView.css';
-
 
 const handleKeyDown = (e, callback) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -87,11 +87,11 @@ const DetalhesView = ({
                             const minutosTrabalho = converterHorasParaMinutos(horasTrabalhadas);
                             const minutosTarefas = selectedDia.tarefas?.reduce((acc, t) => acc + (t.duracaoMin || 0), 0) || 0;
                             const minutosFaltantes = minutosTrabalho - minutosTarefas;
-                            const temTarefaPadrao = temTarefaPadrao(selectedDia);
+                            const tarefaPadrao = temTarefaPadrao(selectedDia);
 
-                            console.log(`📅 ${obterDataFormatada(selectedDia)}: trabalho=${minutosTrabalho}min, tarefas=${minutosTarefas}min, faltantes=${minutosFaltantes}min, temPadrão=${temTarefaPadrao}`);
+                            console.log(`📅 ${obterDataFormatada(selectedDia)}: trabalho=${minutosTrabalho}min, tarefas=${minutosTarefas}min, faltantes=${minutosFaltantes}min, temPadrão=${tarefaPadrao}`);
 
-                            return minutosFaltantes > 0 && !temTarefaPadrao && (
+                            return minutosFaltantes > 0 && !tarefaPadrao && (
                                 <button
                                     onClick={() => onAdicionarTarefaPadrao(selectedDia)}
                                     className="btn-adicionar-padrao-detalhes"

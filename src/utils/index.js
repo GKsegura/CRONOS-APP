@@ -12,4 +12,5 @@ export {
     parseData
 } from './tempo';
 
-export { default as temTarefaPadrao } from './tarefaPadrao';
+export { temTarefaPadrao } from './tarefaPadrao';
+

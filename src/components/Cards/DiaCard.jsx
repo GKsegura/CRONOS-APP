@@ -4,9 +4,9 @@ import {
     calcularTotalTarefasApontadas,
     converterHorasParaMinutos,
     obterDataFormatada,
+    temTarefaPadrao
 } from '@utils';
 import { CheckSquare, Clock, Plus, Trash2 } from 'lucide-react';
-import { temTarefaPadrao } from 'src/utils';
 import './DiaCard.css';
 
 const DiaCard = ({ dia, onSelecionar, onExcluir, onAdicionarTarefaPadrao }) => {
