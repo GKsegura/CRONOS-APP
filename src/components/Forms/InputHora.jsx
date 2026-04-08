@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const InputHora = ({ value, onChange, disabled, className }) => {
+const InputHora = ({ value, onChange, disabled, className }) => {
     const [display, setDisplay] = useState(value || '');
 
     const handleChange = (e) => {
@@ -53,3 +53,5 @@ export const InputHora = ({ value, onChange, disabled, className }) => {
         />
     );
 };
+
+export default InputHora;
