@@ -215,3 +215,140 @@
         padding: var(--spacing-md);
     }
 }
+
+.filtro-group-full {
+    grid-column: 1 / -1;
+}
+
+.search-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.search-filter-status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.625rem 0.875rem;
+}
+
+.clear-filters-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 150ms ease-in-out;
+}
+
+.clear-filters-btn:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.clear-filters-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.badge-neutral {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .filtro-group-full {
+        grid-column: auto;
+    }
+
+    .search-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .clear-filters-btn {
+        justify-content: center;
+    }
+}
+
+.filtro-group-full {
+    grid-column: 1 / -1;
+}
+
+.tarefa-search-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-icon {
+    padding: var(--spacing-sm);
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon-copy {
+    background-color: #e0f2fe;
+    color: #0284c7;
+}
+
+.btn-icon-copy:hover {
+    background-color: #bae6fd;
+}
+
+.clickable {
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.2s;
+}
+
+.clickable:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+.badge-gray {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+@media (max-width: 768px) {
+    .filtro-group-full {
+        grid-column: auto;
+    }
+
+    .tarefa-search-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tarefa-search-footer .btn-icon {
+        width: 100%;
+    }
+}

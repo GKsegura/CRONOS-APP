@@ -1,4 +1,5 @@
 import { diasAPI, tarefasAPI } from '@api';
+import { useToggleApontado } from '@hooks/useToggleApontado';
 import { useCallback, useState } from 'react';
 
 const emptyForm = () => ({
@@ -24,24 +25,31 @@ export const useTaskForm = ({ selectedDia, setSelectedDia, atualizarDiaLocal, se
     const [editForm, setEditForm] = useState(emptyForm());
     const [editingTask, setEditingTask] = useState(null);
     const [savingTask, setSavingTask] = useState(false);
-    const [updatingTaskId, setUpdatingTaskId] = useState(null);
 
-    // ─── Validação ───────────────────────────────────────────────────────────
+    const {
+        handleToggleApontado,
+        updatingTaskId,
+    } = useToggleApontado({
+        selectedDia,
+        setSelectedDia,
+        atualizarDiaLocal,
+        setError,
+    });
 
     const validarTarefa = (form) => {
         if (!form.descricao?.trim()) {
             setError('Descrição é obrigatória');
             return false;
         }
+
         const duracao = parseInt(form.duracao);
         if (!form.duracao || isNaN(duracao) || duracao <= 0) {
             setError('Duração é obrigatória e deve ser maior que 0');
             return false;
         }
+
         return true;
     };
-
-    // ─── Sincronização ───────────────────────────────────────────────────────
 
     const refreshDia = useCallback(async () => {
         const dia = await diasAPI.getById(selectedDia.id);
@@ -49,10 +57,12 @@ export const useTaskForm = ({ selectedDia, setSelectedDia, atualizarDiaLocal, se
         atualizarDiaLocal(dia);
     }, [selectedDia?.id, setSelectedDia, atualizarDiaLocal]);
 
-    // ─── Operações CRUD ──────────────────────────────────────────────────────
-
     const adicionarTarefa = async () => {
-        if (!selectedDia) { setError('Nenhum dia selecionado'); return; }
+        if (!selectedDia) {
+            setError('Nenhum dia selecionado');
+            return;
+        }
+
         if (!validarTarefa(novaTaskForm)) return;
 
         try {
@@ -86,6 +96,7 @@ export const useTaskForm = ({ selectedDia, setSelectedDia, atualizarDiaLocal, se
 
     const removerTarefa = async (taskId) => {
         if (!confirm('Tem certeza que deseja remover esta tarefa?')) return;
+
         try {
             setError('');
             await tarefasAPI.delete(taskId);
@@ -94,22 +105,6 @@ export const useTaskForm = ({ selectedDia, setSelectedDia, atualizarDiaLocal, se
             setError('Erro ao remover tarefa: ' + err.message);
         }
     };
-
-    const handleToggleApontado = async (taskId, novoValor) => {
-        try {
-            setUpdatingTaskId(taskId);
-            setError('');
-            const tarefaAtual = selectedDia.tarefas.find((t) => t.id === taskId);
-            await tarefasAPI.update(taskId, { ...toPayload({ ...tarefaAtual, duracao: tarefaAtual.duracaoMin }), apontado: novoValor });
-            await refreshDia();
-        } catch (err) {
-            setError('Erro ao atualizar status: ' + err.message);
-        } finally {
-            setUpdatingTaskId(null);
-        }
-    };
-
-    // ─── Controle de edição ──────────────────────────────────────────────────
 
     const iniciarEdicao = useCallback((tarefa) => {
         setEditingTask(tarefa.id);
@@ -137,12 +132,12 @@ export const useTaskForm = ({ selectedDia, setSelectedDia, atualizarDiaLocal, se
         setEditForm,
         editingTask,
         savingTask,
-        updatingTaskId,
         adicionarTarefa,
         atualizarTarefa,
         removerTarefa,
-        handleToggleApontado,
         iniciarEdicao,
         cancelarEdicao,
+        handleToggleApontado,
+        updatingTaskId,
     };
 };

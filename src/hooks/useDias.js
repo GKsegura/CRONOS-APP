@@ -6,7 +6,7 @@ export const useDias = () => {
     const [dias, setDias] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [filtroStatus, setFiltroStatus] = useState('pendentes');
+    const [filtroStatus, setFiltroStatus] = useState('todos');
     const [ordenacao, setOrdenacao] = useState('recente');
     const [filtroMes, setFiltroMes] = useState('atual');
 

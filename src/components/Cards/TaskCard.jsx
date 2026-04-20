@@ -16,11 +16,19 @@ const TaskCard = ({
     savingTask,
     formatarDuracao,
     categorias,
-    clientes
+    clientes,
 }) => {
+    const isUpdatingApontado = updatingTaskId === tarefa.id;
 
     const handleToggleApontado = () => {
-        if (updatingTaskId === tarefa.id) return;
+        if (isUpdatingApontado) return;
+
+        if (!onToggleApontado) {
+            console.warn('onToggleApontado não foi informado para TaskCard');
+            toast.error('Não foi possível alterar o status da tarefa.');
+            return;
+        }
+
         onToggleApontado(tarefa.id, !tarefa.apontado);
     };
 
@@ -30,10 +38,11 @@ const TaskCard = ({
             const cliente = tarefa.cliente || 'Sem cliente';
             const descricao = tarefa.obs || '';
 
-            const texto = descricao ? `${titulo} - ${cliente} - ${descricao}` : `${titulo} - ${cliente}`;
+            const texto = descricao
+                ? `${titulo} - ${cliente} - ${descricao}`
+                : `${titulo} - ${cliente}`;
 
             await navigator.clipboard.writeText(texto);
-
             toast.success('Copiado!');
         } catch (err) {
             console.error('Erro ao copiar:', err);
@@ -114,6 +123,7 @@ const TaskCard = ({
 
                     <div className="task-actions">
                         <button
+                            type="button"
                             onClick={() => onSalvar(tarefa.id)}
                             disabled={savingTask}
                             className="btn btn-success"
@@ -123,6 +133,7 @@ const TaskCard = ({
                         </button>
 
                         <button
+                            type="button"
                             onClick={onCancelar}
                             disabled={savingTask}
                             className="btn btn-secondary"
@@ -140,21 +151,28 @@ const TaskCard = ({
         <div className="task-card">
             <div className="task-content">
                 <div className="task-info">
-
                     <div className="task-header">
                         <p className="task-descricao">{tarefa.descricao}</p>
 
-                        <div
-                            className={`badge ${tarefa.apontado ? 'badge-success' : 'badge-gray'} clickable`}
+                        <button
+                            type="button"
+                            className={`badge ${tarefa.apontado ? 'badge-success' : 'badge-gray'} clickable badge-toggle-btn`}
                             onClick={handleToggleApontado}
+                            disabled={isUpdatingApontado}
+                            title="Clique para alterar o status"
+                            aria-label={
+                                tarefa.apontado
+                                    ? 'Desmarcar tarefa como apontada'
+                                    : 'Marcar tarefa como apontada'
+                            }
                             style={{
-                                opacity: updatingTaskId === tarefa.id ? 0.5 : 1,
-                                pointerEvents: updatingTaskId === tarefa.id ? 'none' : 'auto'
+                                opacity: isUpdatingApontado ? 0.5 : 1,
+                                pointerEvents: isUpdatingApontado ? 'none' : 'auto',
                             }}
                         >
                             <CheckCircle className="icon-sm" />
                             <span>{tarefa.apontado ? 'Apontado' : 'Não apontado'}</span>
-                        </div>
+                        </button>
                     </div>
 
                     <div className="task-tags">
@@ -183,15 +201,30 @@ const TaskCard = ({
                 </div>
 
                 <div className="task-buttons">
-                    <button onClick={handleCopy} className="btn-icon btn-icon-copy">
+                    <button
+                        type="button"
+                        onClick={handleCopy}
+                        className="btn-icon btn-icon-copy"
+                        title="Copiar tarefa"
+                    >
                         <Copy className="icon-md" />
                     </button>
 
-                    <button onClick={() => onEditar(tarefa)} className="btn-icon btn-icon-edit">
+                    <button
+                        type="button"
+                        onClick={() => onEditar(tarefa)}
+                        className="btn-icon btn-icon-edit"
+                        title="Editar tarefa"
+                    >
                         <Edit className="icon-md" />
                     </button>
 
-                    <button onClick={() => onRemover(tarefa.id)} className="btn-icon btn-icon-delete">
+                    <button
+                        type="button"
+                        onClick={() => onRemover(tarefa.id)}
+                        className="btn-icon btn-icon-delete"
+                        title="Remover tarefa"
+                    >
                         <Trash2 className="icon-md" />
                     </button>
                 </div>

@@ -31,7 +31,12 @@ const DetalhesView = ({
     onTarefaConvertida,
     onAdicionarTarefaPadrao,
 }) => {
-    const taskForm = useTaskForm({ selectedDia, setSelectedDia, atualizarDiaLocal, setError });
+    const taskForm = useTaskForm({
+        selectedDia,
+        setSelectedDia,
+        atualizarDiaLocal,
+        setError,
+    });
 
     const atualizarTempo = async (campo, valor) => {
         try {
@@ -43,9 +48,21 @@ const DetalhesView = ({
         }
     };
 
-    const { novaTaskForm, setNovaTaskForm, editForm, setEditForm, editingTask,
-        savingTask, updatingTaskId, adicionarTarefa, atualizarTarefa,
-        removerTarefa, handleToggleApontado, iniciarEdicao, cancelarEdicao } = taskForm;
+    const {
+        novaTaskForm,
+        setNovaTaskForm,
+        editForm,
+        setEditForm,
+        editingTask,
+        savingTask,
+        updatingTaskId,
+        adicionarTarefa,
+        atualizarTarefa,
+        removerTarefa,
+        handleToggleApontado,
+        iniciarEdicao,
+        cancelarEdicao,
+    } = taskForm;
 
     const horasTrabalhadas = calcularHorasTrabalhadas(selectedDia);
     const tarefasOrdenadas = ordenarTarefas(selectedDia.tarefas);
@@ -54,10 +71,11 @@ const DetalhesView = ({
         <div className="detalhes-grid">
             <BacklogPanel diaAtualId={selectedDia.id} onTarefaConvertida={onTarefaConvertida} />
 
-            {/* ── Horários ─────────────────────────────────────────────────── */}
             <section className="card">
                 <h2 className="section-title">
-                    <div className="section-icon"><Clock className="icon-lg" /></div>
+                    <div className="section-icon">
+                        <Clock className="icon-lg" />
+                    </div>
                     Horários - {obterDataFormatada(selectedDia)}
                 </h2>
 
@@ -82,9 +100,11 @@ const DetalhesView = ({
                 {selectedDia.inicioTrabalho && selectedDia.fimTrabalho && (
                     <div className="horas-summary">
                         <p className="horas-summary-text">Horas Trabalhadas: {horasTrabalhadas}</p>
+
                         {(() => {
                             const minutosTrabalho = converterHorasParaMinutos(horasTrabalhadas);
-                            const minutosTarefas = selectedDia.tarefas?.reduce((acc, t) => acc + (t.duracaoMin || 0), 0) || 0;
+                            const minutosTarefas =
+                                selectedDia.tarefas?.reduce((acc, t) => acc + (t.duracaoMin || 0), 0) || 0;
                             const minutosFaltantes = minutosTrabalho - minutosTarefas;
                             const tarefaPadrao = temTarefaPadrao(selectedDia);
 
@@ -102,18 +122,25 @@ const DetalhesView = ({
                     </div>
                 )}
 
-                {!selectedDia.inicioTrabalho || !selectedDia.fimTrabalho ? (
-                    <p style={{ color: 'var(--gray-500)', fontSize: 'var(--font-sm)', marginTop: 'var(--spacing-md)' }}>
+                {(!selectedDia.inicioTrabalho || !selectedDia.fimTrabalho) && (
+                    <p
+                        style={{
+                            color: 'var(--gray-500)',
+                            fontSize: 'var(--font-sm)',
+                            marginTop: 'var(--spacing-md)',
+                        }}
+                    >
                         💡 Adicione seus horários de trabalho para usar a atividade padrão
                     </p>
-                ) : null}
+                )}
             </section>
 
-            {/* ── Tarefas ──────────────────────────────────────────────────── */}
             <section className="card">
                 <div className="tarefas-header">
                     <h2 className="section-title">
-                        <div className="section-icon"><CheckSquare className="icon-lg" /></div>
+                        <div className="section-icon">
+                            <CheckSquare className="icon-lg" />
+                        </div>
                         Tarefas
                     </h2>
 
@@ -121,17 +148,21 @@ const DetalhesView = ({
                         <div className="tarefas-total-wrapper">
                             <div className="tarefas-total">
                                 <p className="tarefas-total-label">Total:</p>
-                                <p className="tarefas-total-value">{calcularTotalTarefas(selectedDia.tarefas)}</p>
+                                <p className="tarefas-total-value">
+                                    {calcularTotalTarefas(selectedDia.tarefas)}
+                                </p>
                             </div>
+
                             <div className="tarefas-total">
                                 <p className="tarefas-total-label">Total apontado:</p>
-                                <p className="tarefas-total-value">{calcularTotalTarefasApontadas(selectedDia.tarefas)}</p>
+                                <p className="tarefas-total-value">
+                                    {calcularTotalTarefasApontadas(selectedDia.tarefas)}
+                                </p>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* ── Formulário nova tarefa ────────────────────────────────── */}
                 <div className="nova-tarefa-form">
                     <h3 className="nova-tarefa-title">
                         <Plus className="icon-md" />
@@ -157,7 +188,9 @@ const DetalhesView = ({
                         >
                             <option value="">Selecione categoria</option>
                             {categorias.map((c) => (
-                                <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>
+                                <option key={c} value={c}>
+                                    {c.replace(/_/g, ' ')}
+                                </option>
                             ))}
                         </select>
 
@@ -168,7 +201,11 @@ const DetalhesView = ({
                             className="select"
                         >
                             <option value="">Selecione cliente (opcional)</option>
-                            {clientes.map((c) => <option key={c} value={c}>{c}</option>)}
+                            {clientes.map((c) => (
+                                <option key={c} value={c}>
+                                    {c}
+                                </option>
+                            ))}
                         </select>
 
                         <input
@@ -203,16 +240,25 @@ const DetalhesView = ({
                         <span>Tarefa já foi apontada</span>
                     </label>
 
-                    <button onClick={adicionarTarefa} disabled={savingTask} className="btn btn-primary btn-block">
+                    <button
+                        onClick={adicionarTarefa}
+                        disabled={savingTask}
+                        className="btn btn-primary btn-block"
+                    >
                         {savingTask ? (
-                            <><div className="spinner" />Salvando...</>
+                            <>
+                                <div className="spinner" />
+                                Salvando...
+                            </>
                         ) : (
-                            <><Plus className="icon-md" />Adicionar Tarefa</>
+                            <>
+                                <Plus className="icon-md" />
+                                Adicionar Tarefa
+                            </>
                         )}
                     </button>
                 </div>
 
-                {/* ── Lista de tarefas ─────────────────────────────────────── */}
                 {tarefasOrdenadas?.length > 0 ? (
                     <div className="tarefas-list">
                         {tarefasOrdenadas.map((tarefa) => (

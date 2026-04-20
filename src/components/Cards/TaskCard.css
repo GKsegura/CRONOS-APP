@@ -133,3 +133,13 @@
     background-color: #e5e7eb;
     color: #374151;
 }
+
+.badge-toggle-btn {
+    border: none;
+    background: none;
+    font: inherit;
+}
+
+.badge-toggle-btn:disabled {
+    cursor: not-allowed;
+}

@@ -7,28 +7,45 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import './LandingPage.css';
 
+const montarPayloadTarefa = (tarefa, apontado) => ({
+    descricao: tarefa.descricao?.trim().toUpperCase() || '',
+    categoria: tarefa.categoria || null,
+    cliente: tarefa.cliente || '',
+    duracaoMin: parseInt(tarefa.duracaoMin),
+    obs: tarefa.obs || '',
+    apontado,
+});
+
 const LandingPage = () => {
     const [view, setView] = useState('home');
     const [selectedDia, setSelectedDia] = useState(null);
     const [clientes, setClientes] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [exporting, setExporting] = useState(false);
+    const [updatingTaskIdSearch, setUpdatingTaskIdSearch] = useState(null);
 
     const {
-        dias, loading, error, setError,
-        filtroStatus, setFiltroStatus,
-        ordenacao, setOrdenacao,
-        filtroMes, setFiltroMes,
-        diasRecentes, contadores,
-        criarOuCarregarDia, excluirDia, atualizarDiaLocal,
+        dias,
+        loading,
+        error,
+        setError,
+        filtroStatus,
+        setFiltroStatus,
+        ordenacao,
+        setOrdenacao,
+        filtroMes,
+        setFiltroMes,
+        diasRecentes,
+        contadores,
+        criarOuCarregarDia,
+        excluirDia,
+        atualizarDiaLocal,
     } = useDias();
 
     useEffect(() => {
         clientesAPI.getNomes().then(setClientes).catch(console.error);
         categoriasAPI.getAll().then(setCategorias).catch(console.error);
     }, []);
-
-    // ─── Navegação ───────────────────────────────────────────────────────────
 
     const handleVoltar = useCallback(() => {
         setView('home');
@@ -58,16 +75,12 @@ const LandingPage = () => {
         }
     }, [excluirDia, selectedDia?.id]);
 
-    // ─── Backlog ─────────────────────────────────────────────────────────────
-
     const handleTarefaConvertida = useCallback((novaTarefa) => {
         setSelectedDia((prev) => ({
             ...prev,
-            tarefas: [...(prev.tarefas || []), novaTarefa],
+            tarefas: [...(prev?.tarefas || []), novaTarefa],
         }));
     }, []);
-
-    // ─── Atividade Padrão ─────────────────────────────────────────────────────
 
     const handleAdicionarTarefaPadrao = useCallback(async (dia) => {
         try {
@@ -79,9 +92,9 @@ const LandingPage = () => {
                 return;
             }
 
-            const TarefaPadrao = temTarefaPadrao(dia);
+            const tarefaPadrao = temTarefaPadrao(dia);
 
-            if (TarefaPadrao) {
+            if (tarefaPadrao) {
                 toast.warning('Já existe uma atividade padrão para este dia');
                 return;
             }
@@ -99,46 +112,96 @@ const LandingPage = () => {
             const diaAtualizado = await diasAPI.getById(dia.id);
 
             atualizarDiaLocal(diaAtualizado);
+
+            if (selectedDia?.id === dia.id) {
+                setSelectedDia(diaAtualizado);
+            }
+
             toast.success(`Atividade padrão adicionada com ${minutosFaltantes} minutos`);
         } catch (err) {
             setError('Erro ao adicionar atividade padrão: ' + err.message);
             toast.error('Erro ao adicionar atividade padrão');
             console.error(err);
         }
-    }, [atualizarDiaLocal]);
-
-    // ─── Export ──────────────────────────────────────────────────────────────
+    }, [atualizarDiaLocal, selectedDia, setError]);
 
     const exportarExcel = useCallback(async (mes, ano) => {
         try {
             setExporting(true);
             setError('');
+
             const blob = await exportAPI.excel(mes, ano);
             const url = window.URL.createObjectURL(blob);
+
             const link = Object.assign(document.createElement('a'), {
                 href: url,
                 download: `Apontamentos_${mes.toString().padStart(2, '0')}_${ano}.xlsx`,
             });
+
             document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-            // alert('Planilha exportada com sucesso!');
-            toast.success('Planilha exportada com sucesso!');
 
+            toast.success('Planilha exportada com sucesso!');
         } catch (err) {
-            // setError('Erro ao exportar planilha: ' + err.message);
             toast.error('Erro ao exportar planilha: ' + err.message);
         } finally {
             setExporting(false);
         }
     }, [setError]);
 
-    // ─── Render ──────────────────────────────────────────────────────────────
+    const onToggleApontadoSearch = useCallback(async (taskId, novoValor) => {
+        try {
+            setUpdatingTaskIdSearch(taskId);
+            setError('');
+
+            const diaDaTarefa = dias.find((dia) =>
+                dia.tarefas?.some((tarefa) => tarefa.id === taskId)
+            );
+
+            if (!diaDaTarefa) {
+                throw new Error('Erro ao localizar o dia da tarefa');
+            }
+
+            const tarefaAtual = diaDaTarefa.tarefas.find((tarefa) => tarefa.id === taskId);
+
+            if (!tarefaAtual) {
+                throw new Error('Tarefa não encontrada');
+            }
+
+            await tarefasAPI.update(taskId, montarPayloadTarefa(tarefaAtual, novoValor));
+
+            const diaAtualizado = await diasAPI.getById(diaDaTarefa.id);
+            atualizarDiaLocal(diaAtualizado);
+
+            if (selectedDia?.id === diaDaTarefa.id) {
+                setSelectedDia(diaAtualizado);
+            }
+
+            toast.success(
+                novoValor
+                    ? 'Tarefa marcada como apontada!'
+                    : 'Tarefa desmarcada como apontada!'
+            );
+        } catch (err) {
+            setError('Erro ao atualizar status: ' + err.message);
+            toast.error('Erro ao atualizar status da tarefa');
+            console.error(err);
+        } finally {
+            setUpdatingTaskIdSearch(null);
+        }
+    }, [dias, atualizarDiaLocal, selectedDia, setError]);
 
     return (
         <div className="app-container">
-            <Header view={view} onVoltar={handleVoltar} onGoToSearch={handleGoToSearch} dia={selectedDia} />
+            <Header
+                view={view}
+                onVoltar={handleVoltar}
+                onGoToSearch={handleGoToSearch}
+                dia={selectedDia}
+            />
+
             <ErrorAlert error={error} onClose={() => setError('')} />
 
             <main className="main-content">
@@ -152,7 +215,10 @@ const LandingPage = () => {
                         setFiltroStatus={setFiltroStatus}
                         ordenacao={ordenacao}
                         setOrdenacao={setOrdenacao}
-                        onSelecionarDia={(dia) => { setSelectedDia(dia); setView('detalhes'); }}
+                        onSelecionarDia={(dia) => {
+                            setSelectedDia(dia);
+                            setView('detalhes');
+                        }}
                         onCriarOuCarregarDia={handleCriarOuCarregarDia}
                         onExportar={exportarExcel}
                         exporting={exporting}
@@ -177,7 +243,11 @@ const LandingPage = () => {
                 )}
 
                 {view === 'search' && (
-                    <SearchTasksView dias={dias} />
+                    <SearchTasksView
+                        dias={dias}
+                        onToggleApontado={onToggleApontadoSearch}
+                        updatingTaskId={updatingTaskIdSearch}
+                    />
                 )}
             </main>
         </div>

@@ -1,4 +1,10 @@
-import { BacklogPanel, DiaCard, ExportarExcel, SeletorData } from '@components';
+import {
+    BacklogPanel,
+    DiaCard,
+    ExportarExcel,
+    SeletorData,
+    GraficoHoras
+} from '@components';
 import { Calendar, CheckSquare, Clock, Filter } from 'lucide-react';
 
 const TITULOS = {
@@ -36,6 +42,8 @@ const HomeView = ({
     return (
         <div className="home-grid">
             <SeletorData onSelecionar={onCriarOuCarregarDia} loading={loading} />
+            {diasRecentes.length > 0 && <GraficoHoras dias={diasRecentes} />}
+            {/* {diaAtualHome && <GraficoHoras dias={[diaAtualHome]} />} */}
             <ExportarExcel onExportar={onExportar} exporting={exporting} />
 
             <BacklogPanel diaAtualId={null} onTarefaConvertida={null} />
@@ -70,6 +78,7 @@ const HomeView = ({
                             >
                                 Ambos
                             </button>
+
                             {['todos', 'pendentes', 'completos'].map((status) => (
                                 <button
                                     key={status}
