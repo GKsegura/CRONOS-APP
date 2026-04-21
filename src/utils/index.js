@@ -12,5 +12,11 @@ export {
     parseData
 } from './tempo';
 
+export {
+    calcularIndicadoresDashboard,
+    formatarMinutosEmHoras,
+    verificarDiasSemApontamento
+} from './dashboard';
+
 export { temTarefaPadrao } from './tarefaPadrao';
 
