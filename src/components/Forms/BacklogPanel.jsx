@@ -13,6 +13,8 @@ const formVazio = {
     obs: '',
 };
 
+const normalizarDescricao = (descricao) => descricao?.trim().toUpperCase() || '';
+
 const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
     const [itens, setItens] = useState([]);
     const [categorias, setCategorias] = useState([]);
@@ -24,7 +26,6 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
     const [editForm, setEditForm] = useState(formVazio);
     const [saving, setSaving] = useState(false);
 
-    // Carrega tudo na montagem
     useEffect(() => {
         Promise.all([
             backlogAPI.getAll(),
@@ -37,9 +38,6 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
         }).finally(() => setLoading(false));
     }, []);
 
-    // ---------------------------------------------------------------
-    // CRIAÇÃO
-    // ---------------------------------------------------------------
     const handleCriar = async () => {
         if (!novoForm.descricao.trim()) return;
         setSaving(true);
@@ -54,9 +52,6 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
         }
     };
 
-    // ---------------------------------------------------------------
-    // EDIÇÃO
-    // ---------------------------------------------------------------
     const handleEditar = (item) => {
         setEditingId(item.id);
         setEditForm({
@@ -82,17 +77,11 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
         }
     };
 
-    // ---------------------------------------------------------------
-    // REMOÇÃO
-    // ---------------------------------------------------------------
     const handleRemover = async (id) => {
         await backlogAPI.delete(id);
         setItens(prev => prev.filter(i => i.id !== id));
     };
 
-    // ---------------------------------------------------------------
-    // REORDENAÇÃO
-    // ---------------------------------------------------------------
     const mover = async (index, direcao) => {
         const novaLista = [...itens];
         const destino = index + direcao;
@@ -101,18 +90,18 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
         await backlogAPI.reordenar(novaLista.map(i => i.id));
     };
 
-    // ---------------------------------------------------------------
-    // CONVERTER → TASK DO DIA
-    // ---------------------------------------------------------------
     const handleConverter = async (backlogId) => {
         const novaTarefa = await backlogAPI.converterParaDia(backlogId, diaAtualId);
+
+        const tarefaNormalizada = {
+            ...novaTarefa,
+            descricao: normalizarDescricao(novaTarefa.descricao),
+        };
+
         setItens(prev => prev.filter(i => i.id !== backlogId));
-        onTarefaConvertida?.(novaTarefa);
+        onTarefaConvertida?.(tarefaNormalizada);
     };
 
-    // ---------------------------------------------------------------
-    // HELPERS
-    // ---------------------------------------------------------------
     const formatarDuracao = (min) => {
         const h = Math.floor(min / 60);
         const m = min % 60;
@@ -155,7 +144,6 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                 </button>
             </div>
 
-            {/* Formulário de nova tarefa */}
             {mostrarForm && (
                 <div className="backlog-novo-form">
                     <input
@@ -230,7 +218,6 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                 </div>
             )}
 
-            {/* Lista de itens */}
             {itens.length > 0 && (
                 <div className="backlog-lista">
                     {itens.map((item, index) => (
@@ -270,7 +257,6 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
     );
 };
 
-// "dd/MM/yyyy" ou "yyyy-MM-dd" → "yyyy-MM-dd" para o input[type=date]
 function isoParaInputDate(str) {
     if (!str) return '';
     if (str.includes('/')) {
@@ -280,15 +266,13 @@ function isoParaInputDate(str) {
     return str;
 }
 
-// Monta o payload limpando campos vazios
 function montarPayload(form) {
-    const payload = { descricao: form.descricao.trim() };
+    const payload = { descricao: normalizarDescricao(form.descricao) };
     if (form.categoria) payload.categoria = form.categoria;
     if (form.cliente) payload.cliente = form.cliente;
     if (form.obs?.trim()) payload.obs = form.obs.trim();
     if (form.duracaoMin) payload.duracaoMin = Number(form.duracaoMin);
     if (form.dataLimite) {
-        // Envia no formato dd/MM/yyyy igual ao resto da API
         const [y, m, d] = form.dataLimite.split('-');
         payload.dataLimite = `${d}/${m}/${y}`;
     }
