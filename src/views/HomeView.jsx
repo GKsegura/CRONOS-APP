@@ -120,12 +120,32 @@ const HomeView = ({
                             <span className="dashboard-card-tag">Foco</span>
                         </div>
 
-                        <div className="dashboard-card-label">Cliente mais recorrente</div>
-                        <div className="dashboard-card-value dashboard-card-value-text">
-                            {indicadores.clienteMaisRecorrente}
-                        </div>
+                        <div className="dashboard-card-label">Top 5 clientes</div>
+
+                        {indicadores.topClientes?.length > 0 ? (
+                            <div className="dashboard-ranking">
+                                {indicadores.topClientes.map((cliente, index) => (
+                                    <div key={cliente.nome} className="dashboard-ranking-item">
+                                        <span className="dashboard-ranking-position">
+                                            {index + 1}º
+                                        </span>
+                                        <span className="dashboard-ranking-name">
+                                            {cliente.nome}
+                                        </span>
+                                        <span className="dashboard-ranking-value">
+                                            {cliente.quantidade}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="dashboard-card-value dashboard-card-value-text">
+                                -
+                            </div>
+                        )}
+
                         <div className="dashboard-card-subtitle">
-                            Cliente com mais tarefas no período
+                            Clientes com mais tarefas no período
                         </div>
                     </div>
 

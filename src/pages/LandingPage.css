@@ -329,6 +329,7 @@
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
     gap: 1rem;
     margin: 1.25rem 0 1.75rem;
+    align-items: stretch;
 }
 
 .dashboard-card {
@@ -339,6 +340,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
+    min-height: 220px;
     box-shadow: var(--shadow-sm);
     transition: all var(--transition-base);
 }
@@ -420,6 +422,7 @@
     font-size: var(--font-xs);
     color: var(--text-secondary);
     line-height: 1.4;
+    margin-top: auto;
 }
 
 .dashboard-progress {
@@ -438,9 +441,62 @@
     transition: width 0.3s ease;
 }
 
+.dashboard-ranking {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.dashboard-ranking-item {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    transition: all 0.2s ease;
+}
+
+.dashboard-ranking-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.dashboard-ranking-item:first-child {
+    background: rgba(0, 255, 180, 0.08);
+    border: 1px solid rgba(0, 255, 180, 0.2);
+}
+
+.dashboard-ranking-position {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+}
+
+.dashboard-ranking-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.dashboard-ranking-value {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
 @media (max-width: 768px) {
     .dashboard-cards {
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-card {
+        min-height: auto;
     }
 
     .dashboard-card-value {
@@ -450,4 +506,13 @@
     .dashboard-card-value-text {
         font-size: 1.1rem;
     }
+
+    .dashboard-ranking-name {
+        max-width: 100%;
+    }
+}
+
+.dashboard-ranking {
+    max-height: 100px;
+    overflow-y: auto;
 }

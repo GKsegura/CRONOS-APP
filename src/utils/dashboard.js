@@ -14,6 +14,7 @@ export const calcularIndicadoresDashboard = (dias = []) => {
 
         lista.forEach((item) => {
             if (!item || !String(item).trim()) return;
+
             const chave = String(item).trim();
             mapa.set(chave, (mapa.get(chave) || 0) + 1);
         });
@@ -21,11 +22,17 @@ export const calcularIndicadoresDashboard = (dias = []) => {
         return mapa;
     };
 
-    const obterMaisRecorrente = (mapa) => {
+    const obterMaisRecorrente = (mapa, ignorar = []) => {
+        const ignorarNormalizado = ignorar.map((item) => String(item).trim().toLowerCase());
+
         let itemMaisRecorrente = '-';
         let maiorQuantidade = 0;
 
         for (const [chave, quantidade] of mapa.entries()) {
+            const chaveNormalizada = String(chave).trim().toLowerCase();
+
+            if (ignorarNormalizado.includes(chaveNormalizada)) continue;
+
             if (quantidade > maiorQuantidade) {
                 itemMaisRecorrente = chave;
                 maiorQuantidade = quantidade;
@@ -33,6 +40,32 @@ export const calcularIndicadoresDashboard = (dias = []) => {
         }
 
         return itemMaisRecorrente;
+    };
+
+    const obterTopOcorrencias = (mapa, limite = 5, ignorar = []) => {
+        const ignorarNormalizado = ignorar.map(item =>
+            String(item).trim().toLowerCase()
+        );
+
+        const normalizarNome = (nome) => {
+            return String(nome)
+                .trim()
+                .replace(/^sicoob\s+/i, '') // remove "Sicoob " do começo (case insensitive)
+                .replace(/\s+/g, ' ')       // remove espaços duplicados
+                .trim();
+        };
+
+        return [...mapa.entries()]
+            .filter(([chave]) => {
+                const chaveNormalizada = normalizarNome(chave).toLowerCase();
+                return !ignorarNormalizado.includes(chaveNormalizada);
+            })
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, limite)
+            .map(([nome, quantidade]) => ({
+                nome: normalizarNome(nome),
+                quantidade,
+            }));
     };
 
     const clientesMap = contarOcorrencias(tarefas.map((tarefa) => tarefa.cliente));
@@ -47,8 +80,10 @@ export const calcularIndicadoresDashboard = (dias = []) => {
         totalTarefas,
         totalTarefasApontadas,
         percentualApontado,
-        clienteMaisRecorrente: obterMaisRecorrente(clientesMap),
+        clienteMaisRecorrente: obterMaisRecorrente(clientesMap, ['Nexum']),
         categoriaMaisUsada: obterMaisRecorrente(categoriasMap),
+        topClientes: obterTopOcorrencias(clientesMap, 5, ['Nexum']),
+        topCategorias: obterTopOcorrencias(categoriasMap, 5),
     };
 };
 
@@ -73,7 +108,7 @@ export const verificarDiasSemApontamento = (dias = [], limiteDias = 3) => {
 
         const temApontado = tarefas.some((t) => t.apontado);
 
-        if (!tarefas.length) continue; // ignora dias vazios
+        if (!tarefas.length) continue;
 
         if (!temApontado) {
             contador++;
