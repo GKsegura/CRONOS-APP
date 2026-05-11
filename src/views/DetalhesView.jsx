@@ -11,7 +11,8 @@ import {
     ordenarTarefas,
     temTarefaPadrao
 } from '@utils';
-import { CheckSquare, Clock, Plus } from 'lucide-react';
+import { CheckSquare, Clock, Plus, Sparkles } from 'lucide-react';
+import { useState } from 'react';
 import './DetalhesView.css';
 
 const handleKeyDown = (e, callback) => {
@@ -20,6 +21,8 @@ const handleKeyDown = (e, callback) => {
         callback();
     }
 };
+
+const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const DetalhesView = ({
     selectedDia,
@@ -31,22 +34,15 @@ const DetalhesView = ({
     onTarefaConvertida,
     onAdicionarTarefaPadrao,
 }) => {
+    const [reescrevendoIA, setReescrevendoIA] = useState(false);
+    const [statusIA, setStatusIA] = useState('');
+
     const taskForm = useTaskForm({
         selectedDia,
         setSelectedDia,
         atualizarDiaLocal,
         setError,
     });
-
-    const atualizarTempo = async (campo, valor) => {
-        try {
-            const diaAtualizado = await diasAPI.update(selectedDia.id, campo, valor);
-            setSelectedDia(diaAtualizado);
-            atualizarDiaLocal(diaAtualizado);
-        } catch (err) {
-            setError('Erro ao atualizar horário: ' + err.message);
-        }
-    };
 
     const {
         novaTaskForm,
@@ -64,8 +60,129 @@ const DetalhesView = ({
         cancelarEdicao,
     } = taskForm;
 
+    const atualizarTempo = async (campo, valor) => {
+        try {
+            const diaAtualizado = await diasAPI.update(selectedDia.id, campo, valor);
+            setSelectedDia(diaAtualizado);
+            atualizarDiaLocal(diaAtualizado);
+        } catch (err) {
+            setError('Erro ao atualizar horário: ' + err.message);
+        }
+    };
+
+    const chamarIA = async (texto, modelo) => {
+        const response = await fetch('http://localhost:8080/api/ia/reescrever', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texto, modelo }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Falha na chamada da IA');
+        }
+
+        const data = await response.json();
+        return data.texto;
+    };
+
+    const chamarIAComTentativas = async (texto) => {
+        const modelos = [
+            { nome: 'gemini-2.5-flash', label: 'modelo principal' },
+            { nome: 'gemini-2.5-flash-lite', label: 'modelo leve' },
+        ];
+
+        for (let indiceModelo = 0; indiceModelo < modelos.length; indiceModelo++) {
+            const modelo = modelos[indiceModelo];
+
+            if (indiceModelo > 0) {
+                setStatusIA('Modelo principal indisponível. Tentando com o modelo leve...');
+                await esperar(800);
+            }
+
+            for (let tentativa = 1; tentativa <= 3; tentativa++) {
+                try {
+                    setStatusIA(`Reescrevendo com ${modelo.label}... tentativa ${tentativa}/3`);
+
+                    const textoReescrito = await chamarIA(texto, modelo.nome);
+
+                    setStatusIA('Observação reescrita com sucesso.');
+                    return textoReescrito;
+                } catch (err) {
+                    if (tentativa < 3) {
+                        setStatusIA(`A IA não respondeu agora. Nova tentativa ${tentativa + 1}/3 em instantes...`);
+                        await esperar(tentativa * 1200);
+                    }
+                }
+            }
+        }
+
+        throw new Error('A IA está temporariamente indisponível. Tente novamente mais tarde.');
+    };
+
+    const limparStatusIADepois = () => {
+        setTimeout(() => {
+            setStatusIA('');
+        }, 3500);
+    };
+
+    const reescreverObservacaoComIA = async () => {
+        const texto = novaTaskForm.obs?.trim();
+
+        if (!texto) {
+            setError('Informe uma observação antes de usar a IA.');
+            return;
+        }
+
+        try {
+            setReescrevendoIA(true);
+            setStatusIA('Preparando reescrita da observação...');
+
+            const textoReescrito = await chamarIAComTentativas(texto);
+
+            setNovaTaskForm((prev) => ({
+                ...prev,
+                obs: textoReescrito,
+            }));
+        } catch (err) {
+            setError(err.message || 'Não foi possível reescrever a observação com IA.');
+            setStatusIA('Não foi possível usar a IA no momento. Tente novamente mais tarde.');
+        } finally {
+            setReescrevendoIA(false);
+            limparStatusIADepois();
+        }
+    };
+
+    const reescreverObservacaoEdicaoComIA = async () => {
+        const texto = editForm.obs?.trim();
+
+        if (!texto) {
+            setError('Informe uma observação antes de usar a IA.');
+            return;
+        }
+
+        try {
+            setReescrevendoIA(true);
+            setStatusIA('Preparando reescrita da observação...');
+
+            const textoReescrito = await chamarIAComTentativas(texto);
+
+            setEditForm((prev) => ({
+                ...prev,
+                obs: textoReescrito,
+            }));
+        } catch (err) {
+            setError(err.message || 'Não foi possível reescrever a observação com IA.');
+            setStatusIA('Não foi possível usar a IA no momento. Tente novamente mais tarde.');
+        } finally {
+            setReescrevendoIA(false);
+            limparStatusIADepois();
+        }
+    };
+
     const horasTrabalhadas = calcularHorasTrabalhadas(selectedDia);
-    const tarefasOrdenadas = ordenarTarefas(selectedDia.tarefas);
+    const tarefasOrdenadas = ordenarTarefas(selectedDia.tarefas || []);
+    const totalRegistrado = calcularTotalTarefas(selectedDia.tarefas || []);
+    const totalApontado = calcularTotalTarefasApontadas(selectedDia.tarefas || []);
 
     return (
         <div className="detalhes-grid">
@@ -112,7 +229,6 @@ const DetalhesView = ({
                                 <button
                                     onClick={() => onAdicionarTarefaPadrao(selectedDia)}
                                     className="btn-adicionar-padrao-detalhes"
-                                    title="Adicionar atividade padrão"
                                 >
                                     <Plus className="icon-sm" />
                                     Atividade Padrão
@@ -120,18 +236,6 @@ const DetalhesView = ({
                             );
                         })()}
                     </div>
-                )}
-
-                {(!selectedDia.inicioTrabalho || !selectedDia.fimTrabalho) && (
-                    <p
-                        style={{
-                            color: 'var(--gray-500)',
-                            fontSize: 'var(--font-sm)',
-                            marginTop: 'var(--spacing-md)',
-                        }}
-                    >
-                        💡 Adicione seus horários de trabalho para usar a atividade padrão
-                    </p>
                 )}
             </section>
 
@@ -144,23 +248,10 @@ const DetalhesView = ({
                         Tarefas
                     </h2>
 
-                    {selectedDia.tarefas?.length > 0 && (
-                        <div className="tarefas-total-wrapper">
-                            <div className="tarefas-total">
-                                <p className="tarefas-total-label">Total:</p>
-                                <p className="tarefas-total-value">
-                                    {calcularTotalTarefas(selectedDia.tarefas)}
-                                </p>
-                            </div>
-
-                            <div className="tarefas-total">
-                                <p className="tarefas-total-label">Total apontado:</p>
-                                <p className="tarefas-total-value">
-                                    {calcularTotalTarefasApontadas(selectedDia.tarefas)}
-                                </p>
-                            </div>
-                        </div>
-                    )}
+                    <div className="tarefas-resumo-dia">
+                        <span>Total registrado: {totalRegistrado}</span>
+                        <span>Total apontado: {totalApontado}</span>
+                    </div>
                 </div>
 
                 <div className="nova-tarefa-form">
@@ -186,11 +277,9 @@ const DetalhesView = ({
                             disabled={savingTask}
                             className="select"
                         >
-                            <option value="">Selecione categoria</option>
+                            <option value="">Categoria</option>
                             {categorias.map((c) => (
-                                <option key={c} value={c}>
-                                    {c.replace(/_/g, ' ')}
-                                </option>
+                                <option key={c} value={c}>{c}</option>
                             ))}
                         </select>
 
@@ -200,17 +289,15 @@ const DetalhesView = ({
                             disabled={savingTask}
                             className="select"
                         >
-                            <option value="">Selecione cliente (opcional)</option>
+                            <option value="">Cliente</option>
                             {clientes.map((c) => (
-                                <option key={c} value={c}>
-                                    {c}
-                                </option>
+                                <option key={c} value={c}>{c}</option>
                             ))}
                         </select>
 
                         <input
                             type="number"
-                            placeholder="Duração em minutos *"
+                            placeholder="Duração (min)"
                             value={novaTaskForm.duracao}
                             onChange={(e) => setNovaTaskForm({ ...novaTaskForm, duracao: e.target.value })}
                             onKeyDown={(e) => handleKeyDown(e, adicionarTarefa)}
@@ -221,13 +308,41 @@ const DetalhesView = ({
                     </div>
 
                     <textarea
-                        placeholder="Observações (opcional)"
+                        placeholder="Observações"
                         value={novaTaskForm.obs}
                         onChange={(e) => setNovaTaskForm({ ...novaTaskForm, obs: e.target.value })}
-                        disabled={savingTask}
+                        disabled={savingTask || reescrevendoIA}
                         rows="3"
                         className="textarea"
                     />
+
+                    <div className="ia-actions">
+                        <button
+                            type="button"
+                            onClick={reescreverObservacaoComIA}
+                            disabled={savingTask || reescrevendoIA || !novaTaskForm.obs?.trim()}
+                            className="btn-reescrever-ia"
+                            title="Reescrever observação com IA"
+                        >
+                            {reescrevendoIA ? (
+                                <>
+                                    <div className="spinner" />
+                                    Reescrevendo...
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="icon-sm" />
+                                    Reescrever observação com IA
+                                </>
+                            )}
+                        </button>
+                    </div>
+
+                    {statusIA && (
+                        <p className="ia-status">
+                            {statusIA}
+                        </p>
+                    )}
 
                     <label className="checkbox-label">
                         <input
@@ -259,35 +374,29 @@ const DetalhesView = ({
                     </button>
                 </div>
 
-                {tarefasOrdenadas?.length > 0 ? (
-                    <div className="tarefas-list">
-                        {tarefasOrdenadas.map((tarefa) => (
-                            <TaskCard
-                                key={tarefa.id}
-                                tarefa={tarefa}
-                                onEditar={iniciarEdicao}
-                                onRemover={removerTarefa}
-                                onToggleApontado={handleToggleApontado}
-                                updatingTaskId={updatingTaskId}
-                                editingTask={editingTask}
-                                editForm={editForm}
-                                onEditFormChange={setEditForm}
-                                onSalvar={atualizarTarefa}
-                                onCancelar={cancelarEdicao}
-                                savingTask={savingTask}
-                                formatarDuracao={formatarDuracao}
-                                categorias={categorias}
-                                clientes={clientes}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="empty-state">
-                        <CheckSquare className="empty-state-icon" />
-                        <p className="empty-state-title">Nenhuma tarefa registrada ainda</p>
-                        <p className="empty-state-subtitle">Adicione sua primeira tarefa acima</p>
-                    </div>
-                )}
+                <div className="tarefas-list">
+                    {tarefasOrdenadas?.map((tarefa) => (
+                        <TaskCard
+                            key={tarefa.id}
+                            tarefa={tarefa}
+                            onEditar={iniciarEdicao}
+                            onRemover={removerTarefa}
+                            onToggleApontado={handleToggleApontado}
+                            updatingTaskId={updatingTaskId}
+                            editingTask={editingTask}
+                            editForm={editForm}
+                            onEditFormChange={setEditForm}
+                            onSalvar={atualizarTarefa}
+                            onCancelar={cancelarEdicao}
+                            savingTask={savingTask}
+                            formatarDuracao={formatarDuracao}
+                            categorias={categorias}
+                            clientes={clientes}
+                            onReescreverObservacaoIA={reescreverObservacaoEdicaoComIA}
+                            reescrevendoIA={reescrevendoIA}
+                        />
+                    ))}
+                </div>
             </section>
         </div>
     );

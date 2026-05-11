@@ -47,8 +47,6 @@
     transform: translateY(0);
 }
 
-/* ─── Filtros de tarefas ───────────────────────────────────────────────── */
-
 .tarefas-filtros {
     display: flex;
     flex-wrap: wrap;
@@ -116,4 +114,67 @@
     margin: 0;
     font-size: var(--font-sm);
     color: var(--secondary-color);
+}
+
+.ia-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: calc(var(--spacing-xs) * -1);
+    margin-bottom: var(--spacing-sm);
+}
+
+.btn-reescrever-ia {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    min-height: 38px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--gradient-primary-subtle);
+    border: 1px solid var(--border-primary-alpha-20);
+    color: var(--primary-color);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+}
+
+.btn-reescrever-ia:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.btn-reescrever-ia:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-reescrever-ia:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.ia-status {
+    margin: calc(var(--spacing-xs) * -1) 0 var(--spacing-sm);
+    color: var(--gray-500);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+    text-align: right;
+}
+
+.tarefas-resumo-dia {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 8px;
+}
+
+.tarefas-resumo-dia span {
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
 }

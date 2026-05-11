@@ -1,4 +1,4 @@
-import { CheckCircle, Copy, Edit, Save, Trash2, X } from 'lucide-react';
+import { CheckCircle, Copy, Edit, Save, Sparkles, Trash2, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import './TaskCard.css';
 
@@ -17,6 +17,8 @@ const TaskCard = ({
     formatarDuracao,
     categorias,
     clientes,
+    onReescreverObservacaoIA,
+    reescrevendoIA,
 }) => {
     const isUpdatingApontado = updatingTaskId === tarefa.id;
 
@@ -105,10 +107,34 @@ const TaskCard = ({
                         placeholder="Observações"
                         value={editForm.obs}
                         onChange={(e) => onEditFormChange({ ...editForm, obs: e.target.value })}
-                        disabled={savingTask}
+                        disabled={savingTask || reescrevendoIA}
                         rows="3"
                         className="textarea"
                     />
+
+                    {onReescreverObservacaoIA && (
+                        <div className="ia-actions">
+                            <button
+                                type="button"
+                                onClick={onReescreverObservacaoIA}
+                                disabled={savingTask || reescrevendoIA || !editForm.obs?.trim()}
+                                className="btn-reescrever-ia"
+                                title="Reescrever observação com IA"
+                            >
+                                {reescrevendoIA ? (
+                                    <>
+                                        <div className="spinner" />
+                                        Reescrevendo...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles className="icon-sm" />
+                                        Reescrever observação com IA
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    )}
 
                     <label className="checkbox-label">
                         <input
@@ -125,7 +151,7 @@ const TaskCard = ({
                         <button
                             type="button"
                             onClick={() => onSalvar(tarefa.id)}
-                            disabled={savingTask}
+                            disabled={savingTask || reescrevendoIA}
                             className="btn btn-success"
                         >
                             <Save className="icon-sm" />
@@ -135,7 +161,7 @@ const TaskCard = ({
                         <button
                             type="button"
                             onClick={onCancelar}
-                            disabled={savingTask}
+                            disabled={savingTask || reescrevendoIA}
                             className="btn btn-secondary"
                         >
                             <X className="icon-sm" />

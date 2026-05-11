@@ -1,5 +1,5 @@
 import { categoriasAPI, clientesAPI, diasAPI, exportAPI, tarefasAPI } from '@api';
-import { ErrorAlert, Header } from '@components';
+import { ChatIA, ErrorAlert, Header } from '@components';
 import { useDias } from '@hooks/useDias';
 import { calcularMinutosFaltantes, temTarefaPadrao } from '@utils';
 import { DetalhesView, HomeView, SearchTasksView } from '@views';
@@ -194,63 +194,66 @@ const LandingPage = () => {
     }, [dias, atualizarDiaLocal, selectedDia, setError]);
 
     return (
-        <div className="app-container">
-            <Header
-                view={view}
-                onVoltar={handleVoltar}
-                onGoToSearch={handleGoToSearch}
-                dia={selectedDia}
-            />
+        <>
+            <div className="app-container">
+                <Header
+                    view={view}
+                    onVoltar={handleVoltar}
+                    onGoToSearch={handleGoToSearch}
+                    dia={selectedDia}
+                />
 
-            <ErrorAlert error={error} onClose={() => setError('')} />
+                <ErrorAlert error={error} onClose={() => setError('')} />
 
-            <main className="main-content">
-                {view === 'home' && (
-                    <HomeView
-                        dias={dias}
-                        loading={loading}
-                        diasRecentes={diasRecentes}
-                        contadores={contadores}
-                        filtroStatus={filtroStatus}
-                        setFiltroStatus={setFiltroStatus}
-                        ordenacao={ordenacao}
-                        setOrdenacao={setOrdenacao}
-                        onSelecionarDia={(dia) => {
-                            setSelectedDia(dia);
-                            setView('detalhes');
-                        }}
-                        onCriarOuCarregarDia={handleCriarOuCarregarDia}
-                        onExportar={exportarExcel}
-                        exporting={exporting}
-                        onExcluirDia={handleExcluirDia}
-                        onAdicionarTarefaPadrao={handleAdicionarTarefaPadrao}
-                        filtroMes={filtroMes}
-                        setFiltroMes={setFiltroMes}
-                    />
-                )}
+                <main className="main-content">
+                    {view === 'home' && (
+                        <HomeView
+                            dias={dias}
+                            loading={loading}
+                            diasRecentes={diasRecentes}
+                            contadores={contadores}
+                            filtroStatus={filtroStatus}
+                            setFiltroStatus={setFiltroStatus}
+                            ordenacao={ordenacao}
+                            setOrdenacao={setOrdenacao}
+                            onSelecionarDia={(dia) => {
+                                setSelectedDia(dia);
+                                setView('detalhes');
+                            }}
+                            onCriarOuCarregarDia={handleCriarOuCarregarDia}
+                            onExportar={exportarExcel}
+                            exporting={exporting}
+                            onExcluirDia={handleExcluirDia}
+                            onAdicionarTarefaPadrao={handleAdicionarTarefaPadrao}
+                            filtroMes={filtroMes}
+                            setFiltroMes={setFiltroMes}
+                        />
+                    )}
 
-                {view === 'detalhes' && selectedDia && (
-                    <DetalhesView
-                        selectedDia={selectedDia}
-                        setSelectedDia={setSelectedDia}
-                        atualizarDiaLocal={atualizarDiaLocal}
-                        setError={setError}
-                        clientes={clientes}
-                        categorias={categorias}
-                        onTarefaConvertida={handleTarefaConvertida}
-                        onAdicionarTarefaPadrao={handleAdicionarTarefaPadrao}
-                    />
-                )}
+                    {view === 'detalhes' && selectedDia && (
+                        <DetalhesView
+                            selectedDia={selectedDia}
+                            setSelectedDia={setSelectedDia}
+                            atualizarDiaLocal={atualizarDiaLocal}
+                            setError={setError}
+                            clientes={clientes}
+                            categorias={categorias}
+                            onTarefaConvertida={handleTarefaConvertida}
+                            onAdicionarTarefaPadrao={handleAdicionarTarefaPadrao}
+                        />
+                    )}
 
-                {view === 'search' && (
-                    <SearchTasksView
-                        dias={dias}
-                        onToggleApontado={onToggleApontadoSearch}
-                        updatingTaskId={updatingTaskIdSearch}
-                    />
-                )}
-            </main>
-        </div>
+                    {view === 'search' && (
+                        <SearchTasksView
+                            dias={dias}
+                            onToggleApontado={onToggleApontadoSearch}
+                            updatingTaskId={updatingTaskIdSearch}
+                        />
+                    )}
+                </main>
+            </div>
+            <ChatIA />
+        </>
     );
 };
 
