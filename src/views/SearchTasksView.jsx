@@ -4,6 +4,21 @@ import { useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import './SearchTasksView.css';
 
+const nomesMeses = {
+    '01': 'Janeiro',
+    '02': 'Fevereiro',
+    '03': 'Março',
+    '04': 'Abril',
+    '05': 'Maio',
+    '06': 'Junho',
+    '07': 'Julho',
+    '08': 'Agosto',
+    '09': 'Setembro',
+    '10': 'Outubro',
+    '11': 'Novembro',
+    '12': 'Dezembro',
+};
+
 const SearchTasksView = ({
     dias = [],
     onToggleApontado,
@@ -143,19 +158,220 @@ const SearchTasksView = ({
     ]);
 
     const clientesUnicos = useMemo(() => {
-        const unicos = new Set(tarefasGlobais.map((t) => t.cliente).filter(Boolean));
-        return Array.from(unicos).sort();
-    }, [tarefasGlobais]);
+        const tarefasBase = tarefasGlobais.filter((tarefa) => {
+            const descricaoMatch =
+                !buscaMain ||
+                tarefa.descricao?.toLowerCase().includes(buscaMain.toLowerCase()) ||
+                tarefa.obs?.toLowerCase().includes(buscaMain.toLowerCase());
+
+            const categoriaMatch = !filtroCategoria || tarefa.categoria === filtroCategoria;
+            const dataMatch = !filtroData || tarefa.dataISO === filtroData;
+            const diaMatch = !filtroDia || tarefa.diaNumero === filtroDia.padStart(2, '0');
+            const mesMatch = !filtroMes || tarefa.mesNumero === filtroMes.padStart(2, '0');
+            const anoMatch = !filtroAno || tarefa.anoNumero === filtroAno;
+
+            const apontadoMatch =
+                !filtroApontado ||
+                (filtroApontado === 'apontado' && tarefa.apontado) ||
+                (filtroApontado === 'nao_apontado' && !tarefa.apontado);
+
+            return (
+                descricaoMatch &&
+                categoriaMatch &&
+                dataMatch &&
+                diaMatch &&
+                mesMatch &&
+                anoMatch &&
+                apontadoMatch
+            );
+        });
+
+        const unicos = new Set(
+            tarefasBase.map((t) => t.cliente?.trim()).filter(Boolean)
+        );
+
+        return Array.from(unicos).sort((a, b) => a.localeCompare(b));
+    }, [
+        tarefasGlobais,
+        buscaMain,
+        filtroCategoria,
+        filtroData,
+        filtroDia,
+        filtroMes,
+        filtroAno,
+        filtroApontado,
+    ]);
 
     const categoriasUnicas = useMemo(() => {
-        const unicos = new Set(tarefasGlobais.map((t) => t.categoria).filter(Boolean));
-        return Array.from(unicos).sort();
-    }, [tarefasGlobais]);
+        const tarefasBase = tarefasGlobais.filter((tarefa) => {
+            const descricaoMatch =
+                !buscaMain ||
+                tarefa.descricao?.toLowerCase().includes(buscaMain.toLowerCase()) ||
+                tarefa.obs?.toLowerCase().includes(buscaMain.toLowerCase());
+
+            const clienteMatch = !filtroCliente || tarefa.cliente === filtroCliente;
+            const dataMatch = !filtroData || tarefa.dataISO === filtroData;
+            const diaMatch = !filtroDia || tarefa.diaNumero === filtroDia.padStart(2, '0');
+            const mesMatch = !filtroMes || tarefa.mesNumero === filtroMes.padStart(2, '0');
+            const anoMatch = !filtroAno || tarefa.anoNumero === filtroAno;
+
+            const apontadoMatch =
+                !filtroApontado ||
+                (filtroApontado === 'apontado' && tarefa.apontado) ||
+                (filtroApontado === 'nao_apontado' && !tarefa.apontado);
+
+            return (
+                descricaoMatch &&
+                clienteMatch &&
+                dataMatch &&
+                diaMatch &&
+                mesMatch &&
+                anoMatch &&
+                apontadoMatch
+            );
+        });
+
+        const unicos = new Set(
+            tarefasBase.map((t) => t.categoria?.trim()).filter(Boolean)
+        );
+
+        return Array.from(unicos).sort((a, b) => a.localeCompare(b));
+    }, [
+        tarefasGlobais,
+        buscaMain,
+        filtroCliente,
+        filtroData,
+        filtroDia,
+        filtroMes,
+        filtroAno,
+        filtroApontado,
+    ]);
+
+    const diasUnicos = useMemo(() => {
+        const tarefasBase = tarefasGlobais.filter((tarefa) => {
+            const descricaoMatch =
+                !buscaMain ||
+                tarefa.descricao?.toLowerCase().includes(buscaMain.toLowerCase()) ||
+                tarefa.obs?.toLowerCase().includes(buscaMain.toLowerCase());
+
+            const clienteMatch = !filtroCliente || tarefa.cliente === filtroCliente;
+            const categoriaMatch = !filtroCategoria || tarefa.categoria === filtroCategoria;
+            const dataMatch = !filtroData || tarefa.dataISO === filtroData;
+            const mesMatch = !filtroMes || tarefa.mesNumero === filtroMes.padStart(2, '0');
+            const anoMatch = !filtroAno || tarefa.anoNumero === filtroAno;
+
+            const apontadoMatch =
+                !filtroApontado ||
+                (filtroApontado === 'apontado' && tarefa.apontado) ||
+                (filtroApontado === 'nao_apontado' && !tarefa.apontado);
+
+            return (
+                descricaoMatch &&
+                clienteMatch &&
+                categoriaMatch &&
+                dataMatch &&
+                mesMatch &&
+                anoMatch &&
+                apontadoMatch
+            );
+        });
+
+        const unicos = new Set(tarefasBase.map((t) => t.diaNumero).filter(Boolean));
+        return Array.from(unicos).sort((a, b) => Number(a) - Number(b));
+    }, [
+        tarefasGlobais,
+        buscaMain,
+        filtroCliente,
+        filtroCategoria,
+        filtroData,
+        filtroMes,
+        filtroAno,
+        filtroApontado,
+    ]);
+
+    const mesesUnicos = useMemo(() => {
+        const tarefasBase = tarefasGlobais.filter((tarefa) => {
+            const descricaoMatch =
+                !buscaMain ||
+                tarefa.descricao?.toLowerCase().includes(buscaMain.toLowerCase()) ||
+                tarefa.obs?.toLowerCase().includes(buscaMain.toLowerCase());
+
+            const clienteMatch = !filtroCliente || tarefa.cliente === filtroCliente;
+            const categoriaMatch = !filtroCategoria || tarefa.categoria === filtroCategoria;
+            const dataMatch = !filtroData || tarefa.dataISO === filtroData;
+            const diaMatch = !filtroDia || tarefa.diaNumero === filtroDia.padStart(2, '0');
+            const anoMatch = !filtroAno || tarefa.anoNumero === filtroAno;
+
+            const apontadoMatch =
+                !filtroApontado ||
+                (filtroApontado === 'apontado' && tarefa.apontado) ||
+                (filtroApontado === 'nao_apontado' && !tarefa.apontado);
+
+            return (
+                descricaoMatch &&
+                clienteMatch &&
+                categoriaMatch &&
+                dataMatch &&
+                diaMatch &&
+                anoMatch &&
+                apontadoMatch
+            );
+        });
+
+        const unicos = new Set(tarefasBase.map((t) => t.mesNumero).filter(Boolean));
+        return Array.from(unicos).sort((a, b) => Number(a) - Number(b));
+    }, [
+        tarefasGlobais,
+        buscaMain,
+        filtroCliente,
+        filtroCategoria,
+        filtroData,
+        filtroDia,
+        filtroAno,
+        filtroApontado,
+    ]);
 
     const anosUnicos = useMemo(() => {
-        const unicos = new Set(tarefasGlobais.map((t) => t.anoNumero).filter(Boolean));
-        return Array.from(unicos).sort((a, b) => Number(b) - Number(a));
-    }, [tarefasGlobais]);
+        const tarefasBase = tarefasGlobais.filter((tarefa) => {
+            const descricaoMatch =
+                !buscaMain ||
+                tarefa.descricao?.toLowerCase().includes(buscaMain.toLowerCase()) ||
+                tarefa.obs?.toLowerCase().includes(buscaMain.toLowerCase());
+
+            const clienteMatch = !filtroCliente || tarefa.cliente === filtroCliente;
+            const categoriaMatch = !filtroCategoria || tarefa.categoria === filtroCategoria;
+            const dataMatch = !filtroData || tarefa.dataISO === filtroData;
+            const diaMatch = !filtroDia || tarefa.diaNumero === filtroDia.padStart(2, '0');
+            const mesMatch = !filtroMes || tarefa.mesNumero === filtroMes.padStart(2, '0');
+
+            const apontadoMatch =
+                !filtroApontado ||
+                (filtroApontado === 'apontado' && tarefa.apontado) ||
+                (filtroApontado === 'nao_apontado' && !tarefa.apontado);
+
+            return (
+                descricaoMatch &&
+                clienteMatch &&
+                categoriaMatch &&
+                dataMatch &&
+                diaMatch &&
+                mesMatch &&
+                apontadoMatch
+            );
+        });
+
+        const unicos = new Set(tarefasBase.map((t) => t.anoNumero).filter(Boolean));
+        return Array.from(unicos).sort((a, b) => Number(a) - Number(b));
+    }, [
+        tarefasGlobais,
+        buscaMain,
+        filtroCliente,
+        filtroCategoria,
+        filtroData,
+        filtroDia,
+        filtroMes,
+        filtroApontado,
+    ]);
 
     return (
         <div className="search-tasks-grid">
@@ -228,14 +444,11 @@ const SearchTasksView = ({
                             onChange={(e) => setFiltroDia(e.target.value)}
                         >
                             <option value="">Todos</option>
-                            {Array.from({ length: 31 }, (_, i) => {
-                                const dia = String(i + 1).padStart(2, '0');
-                                return (
-                                    <option key={dia} value={dia}>
-                                        {dia}
-                                    </option>
-                                );
-                            })}
+                            {diasUnicos.map((dia) => (
+                                <option key={dia} value={dia}>
+                                    {dia}
+                                </option>
+                            ))}
                         </select>
                     </div>
 
@@ -247,18 +460,11 @@ const SearchTasksView = ({
                             onChange={(e) => setFiltroMes(e.target.value)}
                         >
                             <option value="">Todos</option>
-                            <option value="01">Janeiro</option>
-                            <option value="02">Fevereiro</option>
-                            <option value="03">Março</option>
-                            <option value="04">Abril</option>
-                            <option value="05">Maio</option>
-                            <option value="06">Junho</option>
-                            <option value="07">Julho</option>
-                            <option value="08">Agosto</option>
-                            <option value="09">Setembro</option>
-                            <option value="10">Outubro</option>
-                            <option value="11">Novembro</option>
-                            <option value="12">Dezembro</option>
+                            {mesesUnicos.map((mes) => (
+                                <option key={mes} value={mes}>
+                                    {nomesMeses[mes]}
+                                </option>
+                            ))}
                         </select>
                     </div>
 
