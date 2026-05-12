@@ -2,7 +2,7 @@ import { categoriasAPI, clientesAPI, diasAPI, exportAPI, tarefasAPI } from '@api
 import { ChatIA, ErrorAlert, Header } from '@components';
 import { useDias } from '@hooks/useDias';
 import { calcularMinutosFaltantes, temTarefaPadrao } from '@utils';
-import { DetalhesView, HomeView, SearchTasksView } from '@views';
+import { ClientesView, DetalhesView, HomeView, SearchTasksView } from '@views';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import './LandingPage.css';
@@ -42,10 +42,19 @@ const LandingPage = () => {
         atualizarDiaLocal,
     } = useDias();
 
-    useEffect(() => {
-        clientesAPI.getNomes().then(setClientes).catch(console.error);
-        categoriasAPI.getAll().then(setCategorias).catch(console.error);
+    const recarregarClientes = useCallback(async () => {
+        try {
+            const nomes = await clientesAPI.getNomes();
+            setClientes(nomes);
+        } catch (error) {
+            console.error(error);
+        }
     }, []);
+
+    useEffect(() => {
+        recarregarClientes();
+        categoriasAPI.getAll().then(setCategorias).catch(console.error);
+    }, [recarregarClientes]);
 
     const handleVoltar = useCallback(() => {
         setView('home');
@@ -55,6 +64,12 @@ const LandingPage = () => {
 
     const handleGoToSearch = useCallback(() => {
         setView('search');
+        setSelectedDia(null);
+        setError('');
+    }, [setError]);
+
+    const handleGoToClientes = useCallback(() => {
+        setView('clientes');
         setSelectedDia(null);
         setError('');
     }, [setError]);
@@ -200,6 +215,7 @@ const LandingPage = () => {
                     view={view}
                     onVoltar={handleVoltar}
                     onGoToSearch={handleGoToSearch}
+                    onGoToClientes={handleGoToClientes}
                     dia={selectedDia}
                 />
 
@@ -250,8 +266,13 @@ const LandingPage = () => {
                             updatingTaskId={updatingTaskIdSearch}
                         />
                     )}
+
+                    {view === 'clientes' && (
+                        <ClientesView onClientesChange={recarregarClientes} />
+                    )}
                 </main>
             </div>
+
             <ChatIA />
         </>
     );

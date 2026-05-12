@@ -26,25 +26,38 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
     const [editForm, setEditForm] = useState(formVazio);
     const [saving, setSaving] = useState(false);
 
-    useEffect(() => {
-        Promise.all([
-            backlogAPI.getAll(),
-            categoriasAPI.getAll(),
-            clientesAPI.getNomes(),
-        ]).then(([backlog, cats, clis]) => {
+    const carregarDados = async () => {
+        setLoading(true);
+
+        try {
+            const [backlog, cats, clis] = await Promise.all([
+                backlogAPI.getAll(),
+                categoriasAPI.getAll(),
+                clientesAPI.getNomes(),
+            ]);
+
             setItens(backlog);
             setCategorias(cats);
             setClientes(clis);
-        }).finally(() => setLoading(false));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        carregarDados();
     }, []);
 
     const handleCriar = async () => {
         if (!novoForm.descricao.trim()) return;
+
         setSaving(true);
+
         try {
             const payload = montarPayload(novoForm);
             const criado = await backlogAPI.create(payload);
-            setItens(prev => [...prev, criado]);
+
+            setItens((prev) => [...prev, criado]);
             setNovoForm(formVazio);
             setMostrarForm(false);
         } finally {
@@ -66,11 +79,14 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
 
     const handleSalvar = async (id) => {
         if (!editForm.descricao.trim()) return;
+
         setSaving(true);
+
         try {
             const payload = montarPayload(editForm);
             const atualizado = await backlogAPI.update(id, payload);
-            setItens(prev => prev.map(i => i.id === id ? atualizado : i));
+
+            setItens((prev) => prev.map((i) => i.id === id ? atualizado : i));
             setEditingId(null);
         } finally {
             setSaving(false);
@@ -79,15 +95,17 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
 
     const handleRemover = async (id) => {
         await backlogAPI.delete(id);
-        setItens(prev => prev.filter(i => i.id !== id));
+        setItens((prev) => prev.filter((i) => i.id !== id));
     };
 
     const mover = async (index, direcao) => {
         const novaLista = [...itens];
         const destino = index + direcao;
+
         [novaLista[index], novaLista[destino]] = [novaLista[destino], novaLista[index]];
+
         setItens(novaLista);
-        await backlogAPI.reordenar(novaLista.map(i => i.id));
+        await backlogAPI.reordenar(novaLista.map((i) => i.id));
     };
 
     const handleConverter = async (backlogId) => {
@@ -98,14 +116,17 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
             descricao: normalizarDescricao(novaTarefa.descricao),
         };
 
-        setItens(prev => prev.filter(i => i.id !== backlogId));
+        setItens((prev) => prev.filter((i) => i.id !== backlogId));
         onTarefaConvertida?.(tarefaNormalizada);
     };
 
     const formatarDuracao = (min) => {
         const h = Math.floor(min / 60);
         const m = min % 60;
-        return h > 0 ? `${h}h${m > 0 ? `${String(m).padStart(2, '0')}m` : ''}` : `${m}m`;
+
+        return h > 0
+            ? `${h}h${m > 0 ? `${String(m).padStart(2, '0')}m` : ''}`
+            : `${m}m`;
     };
 
     if (loading) {
@@ -126,6 +147,7 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                     <div className="backlog-icon">
                         <ClipboardList className="icon" />
                     </div>
+
                     <div>
                         <h2 className="backlog-title">Backlog</h2>
                         <p className="backlog-subtitle">
@@ -135,8 +157,12 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                         </p>
                     </div>
                 </div>
+
                 <button
-                    onClick={() => { setMostrarForm(f => !f); setNovoForm(formVazio); }}
+                    onClick={() => {
+                        setMostrarForm((f) => !f);
+                        setNovoForm(formVazio);
+                    }}
                     className="btn-adicionar"
                 >
                     {mostrarForm ? <X className="icon-sm" /> : <Plus className="icon-sm" />}
@@ -154,6 +180,7 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                         disabled={saving}
                         className="input"
                     />
+
                     <div className="backlog-novo-form-row">
                         <select
                             value={novoForm.categoria}
@@ -162,10 +189,13 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                             className="select"
                         >
                             <option value="">Categoria (opcional)</option>
-                            {categorias.map(cat => (
-                                <option key={cat} value={cat}>{cat.replace(/_/g, ' ')}</option>
+                            {categorias.map((cat) => (
+                                <option key={cat} value={cat}>
+                                    {cat.replace(/_/g, ' ')}
+                                </option>
                             ))}
                         </select>
+
                         <select
                             value={novoForm.cliente}
                             onChange={(e) => setNovoForm({ ...novoForm, cliente: e.target.value })}
@@ -173,11 +203,14 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                             className="select"
                         >
                             <option value="">Cliente (opcional)</option>
-                            {clientes.map(c => (
-                                <option key={c} value={c}>{c}</option>
+                            {clientes.map((c) => (
+                                <option key={c} value={c}>
+                                    {c}
+                                </option>
                             ))}
                         </select>
                     </div>
+
                     <div className="backlog-novo-form-row">
                         <input
                             type="number"
@@ -188,6 +221,7 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                             className="input"
                             min="1"
                         />
+
                         <div className="form-group">
                             <label className="form-label">Data limite (opcional)</label>
                             <input
@@ -199,6 +233,7 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                             />
                         </div>
                     </div>
+
                     <textarea
                         placeholder="Observações (opcional)"
                         value={novoForm.obs}
@@ -207,12 +242,36 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
                         rows="2"
                         className="textarea"
                     />
+
                     <div className="backlog-novo-form-actions">
-                        <button onClick={handleCriar} disabled={saving || !novoForm.descricao.trim()} className="btn btn-success">
-                            {saving ? <><div className="spinner" />Salvando...</> : <><Save className="icon-sm" />Salvar</>}
+                        <button
+                            onClick={handleCriar}
+                            disabled={saving || !novoForm.descricao.trim()}
+                            className="btn btn-success"
+                        >
+                            {saving ? (
+                                <>
+                                    <div className="spinner" />
+                                    Salvando...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="icon-sm" />
+                                    Salvar
+                                </>
+                            )}
                         </button>
-                        <button onClick={() => { setMostrarForm(false); setNovoForm(formVazio); }} disabled={saving} className="btn btn-secondary">
-                            <X className="icon-sm" />Cancelar
+
+                        <button
+                            onClick={() => {
+                                setMostrarForm(false);
+                                setNovoForm(formVazio);
+                            }}
+                            disabled={saving}
+                            className="btn btn-secondary"
+                        >
+                            <X className="icon-sm" />
+                            Cancelar
                         </button>
                     </div>
                 </div>
@@ -259,23 +318,30 @@ const BacklogPanel = ({ diaAtualId, onTarefaConvertida }) => {
 
 function isoParaInputDate(str) {
     if (!str) return '';
+
     if (str.includes('/')) {
         const [d, m, y] = str.split('/');
         return `${y}-${m}-${d}`;
     }
+
     return str;
 }
 
 function montarPayload(form) {
-    const payload = { descricao: normalizarDescricao(form.descricao) };
+    const payload = {
+        descricao: normalizarDescricao(form.descricao),
+    };
+
     if (form.categoria) payload.categoria = form.categoria;
     if (form.cliente) payload.cliente = form.cliente;
     if (form.obs?.trim()) payload.obs = form.obs.trim();
     if (form.duracaoMin) payload.duracaoMin = Number(form.duracaoMin);
+
     if (form.dataLimite) {
         const [y, m, d] = form.dataLimite.split('-');
         payload.dataLimite = `${d}/${m}/${y}`;
     }
+
     return payload;
 }
 
