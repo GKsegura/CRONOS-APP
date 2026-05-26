@@ -103,3 +103,38 @@ export const ordenarTarefas = (tarefas) => {
         ...tarefas.filter((t) => t.apontado).sort(comparar),
     ];
 };
+
+export function parseDuracaoParaMinutos(valor) {
+    if (!valor) return 0;
+
+    const texto = String(valor).toLowerCase().trim().replace(',', '.');
+
+    // número puro => minutos
+    if (/^\d+$/.test(texto)) {
+        return Number(texto);
+    }
+
+    // formato HH:MM
+    if (/^\d{1,2}:\d{2}$/.test(texto)) {
+        const [horas, minutos] = texto.split(':').map(Number);
+        return horas * 60 + minutos;
+    }
+
+    // formato decimal: 1.5h
+    if (/^\d+(\.\d+)?h$/.test(texto)) {
+        return Math.round(parseFloat(texto) * 60);
+    }
+
+    // formatos: 1h / 1h30 / 1h30m / 00h30 / 45m
+    const match = texto.match(/^(?:(\d+)h)?\s*(?:(\d+)m?)?$/);
+
+    if (match) {
+        const horas = Number(match[1] || 0);
+        const minutos = Number(match[2] || 0);
+        const total = horas * 60 + minutos;
+
+        return total > 0 ? total : 0;
+    }
+
+    return 0;
+}

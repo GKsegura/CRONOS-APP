@@ -3,6 +3,8 @@ import {
     DiaCard,
     ExportarExcel,
     GraficoHoras,
+    GraficoHorasCliente,
+    GraficoHorasSemana,
     SeletorData
 } from '@components';
 import { calcularIndicadoresDashboard, formatarMinutosEmHoras } from '@utils';
@@ -168,7 +170,16 @@ const HomeView = ({
                         </div>
                     </div>
                 </div>
-                {diasRecentes.length > 0 && <GraficoHoras dias={diasRecentes} />}
+                {diasRecentes.length > 0 && (
+                    <>
+                        <GraficoHoras dias={diasRecentes} />
+
+                        <div className="dashboard-graficos-grid">
+                            <GraficoHorasCliente dias={diasRecentes} />
+                            <GraficoHorasSemana dias={diasRecentes} />
+                        </div>
+                    </>
+                )}
                 <ExportarExcel onExportar={onExportar} exporting={exporting} />
 
                 <BacklogPanel diaAtualId={null} onTarefaConvertida={null} />

@@ -9,6 +9,9 @@ import {
     formatarDuracao,
     obterDataFormatada,
     ordenarTarefas,
+    sugerirHorariosPorFimAlmoco,
+    sugerirHorariosPorInicio,
+    sugerirHorariosPorInicioAlmoco,
     temTarefaPadrao
 } from '@utils';
 import { CheckSquare, Clock, Plus, Sparkles } from 'lucide-react';
@@ -62,7 +65,48 @@ const DetalhesView = ({
 
     const atualizarTempo = async (campo, valor) => {
         try {
-            const diaAtualizado = await diasAPI.update(selectedDia.id, campo, valor);
+            let diaAtualizado = await diasAPI.update(selectedDia.id, campo, valor);
+
+            if (campo === 'inicioTrabalho') {
+                const sugestao = sugerirHorariosPorInicio(valor);
+
+                if (sugestao) {
+                    if (!selectedDia.inicioAlmoco) {
+                        diaAtualizado = await diasAPI.update(selectedDia.id, 'inicioAlmoco', sugestao.inicioAlmoco);
+                    }
+
+                    if (!selectedDia.fimAlmoco) {
+                        diaAtualizado = await diasAPI.update(selectedDia.id, 'fimAlmoco', sugestao.fimAlmoco);
+                    }
+
+                    if (!selectedDia.fimTrabalho) {
+                        diaAtualizado = await diasAPI.update(selectedDia.id, 'fimTrabalho', sugestao.fimTrabalho);
+                    }
+                }
+            }
+
+            if (campo === 'inicioAlmoco') {
+                const sugestao = sugerirHorariosPorInicioAlmoco(valor);
+
+                if (sugestao) {
+                    if (!selectedDia.fimAlmoco) {
+                        diaAtualizado = await diasAPI.update(selectedDia.id, 'fimAlmoco', sugestao.fimAlmoco);
+                    }
+
+                    if (!selectedDia.fimTrabalho) {
+                        diaAtualizado = await diasAPI.update(selectedDia.id, 'fimTrabalho', sugestao.fimTrabalho);
+                    }
+                }
+            }
+
+            if (campo === 'fimAlmoco') {
+                const sugestao = sugerirHorariosPorFimAlmoco(valor);
+
+                if (sugestao && !selectedDia.fimTrabalho) {
+                    diaAtualizado = await diasAPI.update(selectedDia.id, 'fimTrabalho', sugestao.fimTrabalho);
+                }
+            }
+
             setSelectedDia(diaAtualizado);
             atualizarDiaLocal(diaAtualizado);
         } catch (err) {
@@ -296,14 +340,13 @@ const DetalhesView = ({
                         </select>
 
                         <input
-                            type="number"
-                            placeholder="Duração (min)"
+                            type="text"
+                            placeholder="Duração Ex: 1h00, 00h30 ou 90"
                             value={novaTaskForm.duracao}
                             onChange={(e) => setNovaTaskForm({ ...novaTaskForm, duracao: e.target.value })}
                             onKeyDown={(e) => handleKeyDown(e, adicionarTarefa)}
                             disabled={savingTask}
                             className="input"
-                            min="1"
                         />
                     </div>
 

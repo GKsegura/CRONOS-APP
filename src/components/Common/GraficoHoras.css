@@ -1,0 +1,119 @@
+.grafico-horas__content {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xl);
+}
+
+.grafico-horas__svg {
+    width: 160px;
+    height: 160px;
+    max-width: 100%;
+    flex-shrink: 0;
+    overflow: visible;
+}
+
+.grafico-horas__arc {
+    transition: opacity var(--transition-base);
+}
+
+.grafico-horas__arc:hover {
+    opacity: 1 !important;
+}
+
+.grafico-horas__center-label {
+    font-size: 13px;
+    font-weight: var(--font-weight-bold);
+    fill: var(--gray-900);
+}
+
+.grafico-horas__center-sub {
+    font-size: 10px;
+    fill: var(--gray-500);
+}
+
+.grafico-horas__legend {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.grafico-horas__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.grafico-horas__dot {
+    width: 14px;
+    height: 14px;
+    border-radius: var(--border-radius-sm);
+    flex-shrink: 0;
+}
+
+.grafico-horas__dot--apontado {
+    background: var(--primary-color);
+}
+
+.grafico-horas__dot--nao-apontado {
+    background: var(--secondary-color);
+    opacity: 0.35;
+}
+
+.grafico-horas__item-label {
+    font-size: var(--font-sm);
+    color: var(--gray-600);
+    margin: 0;
+}
+
+.grafico-horas__item-value {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.grafico-horas__total {
+    margin-top: var(--spacing-xs);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--gray-200);
+}
+
+.grafico-horas__total-label {
+    font-size: var(--font-sm);
+    color: var(--gray-500);
+    margin: 0;
+}
+
+.grafico-horas__total-value {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.grafico-horas__item-label,
+.grafico-horas__item-value,
+.grafico-horas__total-label,
+.grafico-horas__total-value {
+    word-break: break-word;
+}
+
+@media (max-width: 640px) {
+    .grafico-horas__content {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .grafico-horas__legend {
+        width: 100%;
+        align-items: center;
+    }
+
+    .grafico-horas__item {
+        justify-content: center;
+    }
+}

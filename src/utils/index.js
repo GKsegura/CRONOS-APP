@@ -9,10 +9,13 @@ export {
     formatarDuracao,
     obterDataFormatada,
     ordenarTarefas,
-    parseData
+    parseData,
+    parseDuracaoParaMinutos
 } from './tempo';
 
 export {
+    calcularHorasPorCliente,
+    calcularHorasPorSemana,
     calcularIndicadoresDashboard,
     formatarMinutosEmHoras,
     verificarDiasSemApontamento
@@ -20,3 +23,7 @@ export {
 
 export { temTarefaPadrao } from './tarefaPadrao';
 
+export {
+    sugerirHorariosPorFimAlmoco, sugerirHorariosPorInicio,
+    sugerirHorariosPorInicioAlmoco
+} from './horarios';

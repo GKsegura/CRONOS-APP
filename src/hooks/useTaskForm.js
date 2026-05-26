@@ -1,5 +1,6 @@
 import { diasAPI, tarefasAPI } from '@api';
 import { useToggleApontado } from '@hooks/useToggleApontado';
+import { parseDuracaoParaMinutos } from '@utils';
 import { useCallback, useState } from 'react';
 
 const emptyForm = () => ({
@@ -15,7 +16,7 @@ const toPayload = (form) => ({
     descricao: form.descricao.trim().toUpperCase(),
     categoria: form.categoria || null,
     cliente: form.cliente || '',
-    duracaoMin: parseInt(form.duracao),
+    duracaoMin: parseDuracaoParaMinutos(form.duracao),
     obs: form.obs || '',
     apontado: form.apontado,
 });
@@ -42,7 +43,7 @@ export const useTaskForm = ({ selectedDia, setSelectedDia, atualizarDiaLocal, se
             return false;
         }
 
-        const duracao = parseInt(form.duracao);
+        const duracao = parseDuracaoParaMinutos(form.duracao);
         if (!form.duracao || isNaN(duracao) || duracao <= 0) {
             setError('Duração é obrigatória e deve ser maior que 0');
             return false;

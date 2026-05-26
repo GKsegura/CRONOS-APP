@@ -94,13 +94,12 @@ const TaskCard = ({
                     </select>
 
                     <input
-                        type="number"
-                        placeholder="Duração em minutos *"
+                        type="text"
+                        placeholder="Duração * Ex: 1h00, 00h30 ou 90"
                         value={editForm.duracao}
                         onChange={(e) => onEditFormChange({ ...editForm, duracao: e.target.value })}
                         disabled={savingTask}
                         className="input"
-                        min="1"
                     />
 
                     <textarea

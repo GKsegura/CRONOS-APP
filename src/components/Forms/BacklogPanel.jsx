@@ -1,5 +1,6 @@
 import { backlogAPI, categoriasAPI, clientesAPI } from '@api';
 import { BacklogCard } from '@components/Cards';
+import { parseDuracaoParaMinutos } from '@utils';
 import { ClipboardList, Plus, Save, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import './BacklogPanel.css';
@@ -335,7 +336,9 @@ function montarPayload(form) {
     if (form.categoria) payload.categoria = form.categoria;
     if (form.cliente) payload.cliente = form.cliente;
     if (form.obs?.trim()) payload.obs = form.obs.trim();
-    if (form.duracaoMin) payload.duracaoMin = Number(form.duracaoMin);
+    if (form.duracaoMin) {
+        payload.duracaoMin = parseDuracaoParaMinutos(form.duracaoMin);
+    }
 
     if (form.dataLimite) {
         const [y, m, d] = form.dataLimite.split('-');

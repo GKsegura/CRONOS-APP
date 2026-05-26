@@ -75,16 +75,18 @@ export const calcularIndicadoresDashboard = (dias = []) => {
         ? Math.round((totalTarefasApontadas / totalTarefas) * 100)
         : 0;
 
-    return {
-        totalMinutos,
-        totalTarefas,
-        totalTarefasApontadas,
-        percentualApontado,
-        clienteMaisRecorrente: obterMaisRecorrente(clientesMap, ['Nexum']),
-        categoriaMaisUsada: obterMaisRecorrente(categoriasMap),
-        topClientes: obterTopOcorrencias(clientesMap, 5, ['Nexum']),
-        topCategorias: obterTopOcorrencias(categoriasMap, 5),
-    };
+return {
+    totalMinutos,
+    totalTarefas,
+    totalTarefasApontadas,
+    percentualApontado,
+    clienteMaisRecorrente: obterMaisRecorrente(clientesMap, ['Nexum']),
+    categoriaMaisUsada: obterMaisRecorrente(categoriasMap),
+    topClientes: obterTopOcorrencias(clientesMap, 5, ['Nexum']),
+    topCategorias: obterTopOcorrencias(categoriasMap, 5),
+    horasPorCliente: calcularHorasPorCliente(dias),
+    horasPorSemana: calcularHorasPorSemana(dias),
+};
 };
 
 export const formatarMinutosEmHoras = (minutos = 0) => {
@@ -122,4 +124,66 @@ export const verificarDiasSemApontamento = (dias = [], limiteDias = 3) => {
     }
 
     return false;
+};
+
+export const calcularHorasPorCliente = (dias = [], limite = 8) => {
+    const tarefas = dias.flatMap((dia) => dia.tarefas || []);
+    const mapa = new Map();
+
+    tarefas.forEach((tarefa) => {
+        const cliente = String(tarefa.cliente || 'Sem cliente').trim();
+        const minutos = Number(tarefa.duracaoMin) || 0;
+
+        if (!cliente || minutos <= 0) return;
+
+        mapa.set(cliente, (mapa.get(cliente) || 0) + minutos);
+    });
+
+    return [...mapa.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limite)
+        .map(([cliente, minutos]) => ({
+            cliente,
+            minutos,
+            horas: Number((minutos / 60).toFixed(2)),
+            label: cliente,
+            valor: minutos,
+        }));
+};
+
+export const calcularHorasPorSemana = (dias = []) => {
+    const mapa = new Map();
+
+    dias.forEach((dia) => {
+        if (!dia.data) return;
+
+        const data = new Date(dia.data);
+        if (Number.isNaN(data.getTime())) return;
+
+        const tarefas = dia.tarefas || [];
+
+        const totalMinutosDia = tarefas.reduce((acc, tarefa) => {
+            return acc + (Number(tarefa.duracaoMin) || 0);
+        }, 0);
+
+        if (totalMinutosDia <= 0) return;
+
+        const inicioAno = new Date(data.getFullYear(), 0, 1);
+        const diasPassados = Math.floor((data - inicioAno) / 86400000);
+        const semana = Math.ceil((diasPassados + inicioAno.getDay() + 1) / 7);
+
+        const chave = `${data.getFullYear()}-S${String(semana).padStart(2, '0')}`;
+
+        mapa.set(chave, (mapa.get(chave) || 0) + totalMinutosDia);
+    });
+
+    return [...mapa.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([semana, minutos]) => ({
+            semana,
+            minutos,
+            horas: Number((minutos / 60).toFixed(2)),
+            label: semana.replace('-S', ' • Semana '),
+            valor: minutos,
+        }));
 };

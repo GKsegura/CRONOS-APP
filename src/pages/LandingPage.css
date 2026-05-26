@@ -516,3 +516,16 @@
     max-height: 100px;
     overflow-y: auto;
 }
+
+.dashboard-graficos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+@media (max-width: 900px) {
+    .dashboard-graficos-grid {
+        grid-template-columns: 1fr;
+    }
+}
