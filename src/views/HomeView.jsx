@@ -176,7 +176,7 @@ const HomeView = ({
 
                         <div className="dashboard-graficos-grid">
                             <GraficoHorasCliente dias={diasRecentes} />
-                            <GraficoHorasSemana dias={diasRecentes} />
+                            <GraficoHorasSemana dias={dias} />
                         </div>
                     </>
                 )}

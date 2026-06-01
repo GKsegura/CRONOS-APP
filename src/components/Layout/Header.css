@@ -86,6 +86,30 @@
     box-shadow: var(--shadow-md);
 }
 
+.btn-undo-redo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-lg);
+    background: rgba(100, 200, 100, 0.1);
+    border: 1px solid #4CAF50;
+    color: #4CAF50;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.btn-undo-redo:hover:not(:disabled) {
+    background: #4CAF50;
+    color: var(--background-color);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-undo-redo:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .icon-sm {
     width: var(--icon-sm);
     height: var(--icon-sm);

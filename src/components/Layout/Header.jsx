@@ -1,6 +1,6 @@
 import { SeletorTema } from '@components/Common';
 import '@styles/components.css';
-import { ArrowLeft, Building2, Clock, Search } from 'lucide-react';
+import { ArrowLeft, Building2, Clock, RotateCcw, RotateCw, Search } from 'lucide-react';
 import './Header.css';
 
 const Header = ({
@@ -9,6 +9,11 @@ const Header = ({
     dia,
     onGoToSearch,
     onGoToClientes,
+    onUndo,
+    onRedo,
+    canUndo,
+    canRedo,
+    lastAction,
 }) => (
     <header className="header">
         <div className="header-container">
@@ -47,6 +52,28 @@ const Header = ({
                     >
                         <Search className="icon-sm" />
                     </button>
+
+                    {view === 'detalhes' && (
+                        <>
+                            <button
+                                onClick={onUndo}
+                                disabled={!canUndo}
+                                className="btn-undo-redo"
+                                title={canUndo ? `Desfazer: ${lastAction}` : 'Nada para desfazer'}
+                            >
+                                <RotateCcw className="icon-sm" />
+                            </button>
+
+                            <button
+                                onClick={onRedo}
+                                disabled={!canRedo}
+                                className="btn-undo-redo"
+                                title={canRedo ? 'Refazer' : 'Nada para refazer'}
+                            >
+                                <RotateCw className="icon-sm" />
+                            </button>
+                        </>
+                    )}
 
                     <SeletorTema />
 

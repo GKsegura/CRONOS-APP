@@ -75,18 +75,18 @@ export const calcularIndicadoresDashboard = (dias = []) => {
         ? Math.round((totalTarefasApontadas / totalTarefas) * 100)
         : 0;
 
-return {
-    totalMinutos,
-    totalTarefas,
-    totalTarefasApontadas,
-    percentualApontado,
-    clienteMaisRecorrente: obterMaisRecorrente(clientesMap, ['Nexum']),
-    categoriaMaisUsada: obterMaisRecorrente(categoriasMap),
-    topClientes: obterTopOcorrencias(clientesMap, 5, ['Nexum']),
-    topCategorias: obterTopOcorrencias(categoriasMap, 5),
-    horasPorCliente: calcularHorasPorCliente(dias),
-    horasPorSemana: calcularHorasPorSemana(dias),
-};
+    return {
+        totalMinutos,
+        totalTarefas,
+        totalTarefasApontadas,
+        percentualApontado,
+        clienteMaisRecorrente: obterMaisRecorrente(clientesMap, ['Nexum']),
+        categoriaMaisUsada: obterMaisRecorrente(categoriasMap),
+        topClientes: obterTopOcorrencias(clientesMap, 5, ['Nexum']),
+        topCategorias: obterTopOcorrencias(categoriasMap, 5),
+        horasPorCliente: calcularHorasPorCliente(dias),
+        horasPorSemana: calcularHorasPorSemana(dias),
+    };
 };
 
 export const formatarMinutosEmHoras = (minutos = 0) => {
@@ -96,31 +96,46 @@ export const formatarMinutosEmHoras = (minutos = 0) => {
     return `${horas}h${String(minutosRestantes).padStart(2, '0')}m`;
 };
 
+const parseDataBR = (data) => {
+    if (!data) return null;
+
+    const texto = String(data).trim();
+
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(texto)) {
+        const [dia, mes, ano] = texto.split('/').map(Number);
+        return new Date(ano, mes - 1, dia);
+    }
+
+    const dataConvertida = new Date(texto);
+    return Number.isNaN(dataConvertida.getTime()) ? null : dataConvertida;
+};
+
+const formatarDataCurta = (data) => {
+    return data.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+    });
+};
+
 export const verificarDiasSemApontamento = (dias = [], limiteDias = 3) => {
     if (!dias.length) return false;
 
     const diasOrdenados = [...dias].sort((a, b) => {
-        return new Date(b.data) - new Date(a.data);
+        return parseDataBR(b.data) - parseDataBR(a.data);
     });
 
     let contador = 0;
 
     for (const dia of diasOrdenados) {
         const tarefas = dia.tarefas || [];
-
         const temApontado = tarefas.some((t) => t.apontado);
 
         if (!tarefas.length) continue;
 
-        if (!temApontado) {
-            contador++;
-        } else {
-            break;
-        }
+        if (!temApontado) contador++;
+        else break;
 
-        if (contador >= limiteDias) {
-            return true;
-        }
+        if (contador >= limiteDias) return true;
     }
 
     return false;
@@ -155,10 +170,8 @@ export const calcularHorasPorSemana = (dias = []) => {
     const mapa = new Map();
 
     dias.forEach((dia) => {
-        if (!dia.data) return;
-
-        const data = new Date(dia.data);
-        if (Number.isNaN(data.getTime())) return;
+        const data = parseDataBR(dia.data);
+        if (!data) return;
 
         const tarefas = dia.tarefas || [];
 
@@ -174,16 +187,32 @@ export const calcularHorasPorSemana = (dias = []) => {
 
         const chave = `${data.getFullYear()}-S${String(semana).padStart(2, '0')}`;
 
-        mapa.set(chave, (mapa.get(chave) || 0) + totalMinutosDia);
+        const registroAtual = mapa.get(chave);
+
+        if (!registroAtual) {
+            mapa.set(chave, {
+                semana: chave,
+                minutos: totalMinutosDia,
+                inicio: data,
+                fim: data,
+            });
+
+            return;
+        }
+
+        registroAtual.minutos += totalMinutosDia;
+
+        if (data < registroAtual.inicio) registroAtual.inicio = data;
+        if (data > registroAtual.fim) registroAtual.fim = data;
     });
 
-    return [...mapa.entries()]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([semana, minutos]) => ({
+    return [...mapa.values()]
+        .sort((a, b) => a.inicio - b.inicio)
+        .map(({ semana, minutos, inicio, fim }) => ({
             semana,
             minutos,
             horas: Number((minutos / 60).toFixed(2)),
-            label: semana.replace('-S', ' • Semana '),
+            label: `${formatarDataCurta(inicio)} até ${formatarDataCurta(fim)}`,
             valor: minutos,
         }));
 };

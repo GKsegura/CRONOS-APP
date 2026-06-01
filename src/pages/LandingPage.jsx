@@ -1,6 +1,8 @@
 import { categoriasAPI, clientesAPI, diasAPI, exportAPI, tarefasAPI } from '@api';
 import { ChatIA, ErrorAlert, Header } from '@components';
 import { useDias } from '@hooks/useDias';
+import { useKeyboardShortcuts } from '@hooks/useKeyboardShortcuts';
+import { useStore } from '@store';
 import { calcularMinutosFaltantes, temTarefaPadrao } from '@utils';
 import { ClientesView, DetalhesView, HomeView, SearchTasksView } from '@views';
 import { useCallback, useEffect, useState } from 'react';
@@ -23,6 +25,16 @@ const LandingPage = () => {
     const [categorias, setCategorias] = useState([]);
     const [exporting, setExporting] = useState(false);
     const [updatingTaskIdSearch, setUpdatingTaskIdSearch] = useState(null);
+
+    // Undo/Redo - usar seletores separados para evitar re-renders infinitos
+    const undo = useStore((state) => state.undo);
+    const redo = useStore((state) => state.redo);
+    const canUndo = useStore((state) => state.canUndo);
+    const canRedo = useStore((state) => state.canRedo);
+    const lastAction = useStore((state) => state.lastAction);
+
+    // Usar atalhos de teclado para undo/redo (apenas na view de detalhes)
+    useKeyboardShortcuts(undo, redo, view === 'detalhes');
 
     const {
         dias,
@@ -217,6 +229,11 @@ const LandingPage = () => {
                     onGoToSearch={handleGoToSearch}
                     onGoToClientes={handleGoToClientes}
                     dia={selectedDia}
+                    onUndo={undo}
+                    onRedo={redo}
+                    canUndo={canUndo}
+                    canRedo={canRedo}
+                    lastAction={lastAction}
                 />
 
                 <ErrorAlert error={error} onClose={() => setError('')} />
